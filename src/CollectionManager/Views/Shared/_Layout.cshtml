@@ -31,9 +31,11 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    <li><a asp-area="" asp-controller="Collection" asp-action="Games">Games</a></li>
+                    <li><a asp-area="" asp-controller="Collection" asp-action="Books">Books</a></li>
+                    <li><a asp-area="" asp-controller="Collection" asp-action="Music">Music</a></li>
+                    <li><a asp-area="" asp-controller="Collection" asp-action="Series">Series</a></li>
+                    <li><a asp-area="" asp-controller="Collection" asp-action="Movies">Movies</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>
@@ -44,6 +46,12 @@
         <hr />
         <footer>
             <p>&copy; 2016 - CollectionManager</p>
+            <p class="footer-links">
+                <ul class="nav navbar-nav">
+                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                </ul>
+            </p>
         </footer>
     </div>
 
