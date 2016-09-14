@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace CollectionManager.Models.Collection
 {
-    public class Books: CollectionElementMaster
+    public class Book: CollectionElementMaster
     {
         // goodreads
         #region Properties

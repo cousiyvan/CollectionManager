@@ -3,11 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using CollectionManager.Configuration;
 
 namespace CollectionManager.Controllers
 {
     public class CollectionController : Controller
     {
+        #region Members
+        private readonly AppSettings _appSettings;
+        #endregion
+
+        #region Constructors
+        public CollectionController(IOptions<AppSettings> appSettings)
+        {
+            _appSettings = appSettings.Value;
+        }
+        #endregion
+
         /// <summary>
         /// Controller to the index view
         /// </summary>

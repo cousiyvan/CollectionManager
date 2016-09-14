@@ -1,4 +1,6 @@
-﻿@{
+﻿@model CollectionManager.Configuration.AppSettings
+
+@{
     ViewData["Title"] = "Collection controller home page";
 }
 <div class="page-header">
@@ -7,4 +9,5 @@
 
 <div class="main">
     <h2>You should not be here!!!!!!!</h2>
+    <h3>Test of @Html.DisplayNameFor(model => model.ServicesSettings.Serie)</h3>
 </div>
