@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using CollectionManager.Configuration;
 using CollectionManager.Utils;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace CollectionManager.Controllers
 {
@@ -39,12 +41,25 @@ namespace CollectionManager.Controllers
         {
             Uri gameApiRestUrl = null;
             string parameters = string.Empty;
+            Dictionary<string, string> apiKey = new Dictionary<string, string>();
+            apiKey.Add("X-Mashape-Key", "MtG6phh7A5mshHpRiU1ooJK3glr9p1S1VsejsnX9JomArwQspE");
             RestAPI restApi = null;
-            if (Uri.TryCreate("https://igdbcom-internet-game-database-v1.p.mashape.com/games/?fields=name&limit=10&offset=0&order=release_dates.date%3Adesc&search=zelda+Breath", UriKind.Absolute, out gameApiRestUrl))
+            JsonReader json;
+            string restOutput = string.Empty;
+
+            if (Uri.TryCreate("https://igdbcom-internet-game-database-v1.p.mashape.com/", UriKind.Absolute, out gameApiRestUrl))
             {
-                parameters = "X-Mashape-Key: MtG6phh7A5mshHpRiU1ooJK3glr9p1S1VsejsnX9JomArwQspE"; ;
-                restApi = new RestAPI(string.Empty, gameApiRestUrl, parameters);
-                restApi.DoCall();
+                parameters = "games/?fields=name,release_dates,esrb.synopsis,rating&limit=10&offset=0&order=release_dates.date%3Adesc&search=zelda"; ;
+                restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
+                json = restApi.DoCall();
+
+                while (json.Read())
+                {
+                    if (json.Value != null)
+                    {
+                        ViewBag.Information += json.Value;
+                    }
+                }
             }
             return View();
         }
