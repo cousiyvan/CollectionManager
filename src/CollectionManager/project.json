@@ -44,7 +44,8 @@
       "version": "1.0.0-preview2-final",
       "type": "build"
     },
-    "Microsoft.Extensions.Options": "1.0.0"
+    "Microsoft.Extensions.Options": "1.0.0",
+    "Microsoft.AspNet.WebApi.Client": "5.2.2"
   },
 
   "tools": {

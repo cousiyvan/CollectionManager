@@ -7,7 +7,7 @@ namespace CollectionManager.Models.Collection
 {
     public class Game: CollectionElementMaster
     {
-        // igdb
+        // igdb - API: https://market.mashape.com/igdbcom/internet-game-database
 
         #region Properties
         public List<string> Developers { get; set; }

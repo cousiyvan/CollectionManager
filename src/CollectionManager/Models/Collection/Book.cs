@@ -7,7 +7,7 @@ namespace CollectionManager.Models.Collection
 {
     public class Book: CollectionElementMaster
     {
-        // goodreads
+        // goodreads: https://www.goodreads.com/api
         #region Properties
         public List<string> Authors { get; set; }
 

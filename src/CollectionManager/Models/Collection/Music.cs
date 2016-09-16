@@ -7,7 +7,7 @@ namespace CollectionManager.Models.Collection
 {
     public class Music: CollectionElementMaster
     {
-        // http://www.allmusic.com/
+        // http://www.allmusic.com/ - http://www.onemusicapi.com/
         #region Properties
         public TimeSpan Duration { get; set; }
 

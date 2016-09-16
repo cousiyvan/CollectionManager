@@ -7,6 +7,7 @@ namespace CollectionManager.Models.Collection
 {
     public class Serie: CollectionElementMaster
     {
+        // tvdb: http://thetvdb.com/?tab=apiregister
         #region Properties
         public TimeSpan Runtime { get; set; }
 
