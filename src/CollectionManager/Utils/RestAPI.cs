@@ -20,6 +20,14 @@ namespace CollectionManager.Utils
         private string _parameters;
         #endregion
 
+        #region Properties
+        public string Parameters
+        {
+            get { return _parameters; }
+            set { _parameters = value; }
+        }
+        #endregion
+
         #region Constructors
         public RestAPI()
         {

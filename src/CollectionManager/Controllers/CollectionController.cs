@@ -8,6 +8,7 @@ using CollectionManager.Configuration;
 using CollectionManager.Utils;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using CollectionManager.Models.Collection;
 
 namespace CollectionManager.Controllers
 {
@@ -46,6 +47,8 @@ namespace CollectionManager.Controllers
             RestAPI restApi = null;
             JsonReader json;
             string restOutput = string.Empty;
+            MapperGame mapper = new MapperGame();
+            Game game = new Game();
 
             if (Uri.TryCreate("https://igdbcom-internet-game-database-v1.p.mashape.com/", UriKind.Absolute, out gameApiRestUrl))
             {
@@ -57,9 +60,12 @@ namespace CollectionManager.Controllers
                 {
                     if (json.Value != null)
                     {
-                        ViewBag.Information += json.Value;
+                        ViewBag.Information += json.Value + " ";
                     }
                 }
+
+                json = restApi.DoCall();
+                mapper.Mapping(json, ref game, restApi);
             }
             return View();
         }
