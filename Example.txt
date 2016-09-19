@@ -1,0 +1,51 @@
+id 7346 
+name The Legend of Zelda: Breath of the Wild 
+slug the-legend-of-zelda-breath-of-the-wild 
+url https://www.igdb.com/games/the-legend-of-zelda-breath-of-the-wild 
+created_at 1402423357911 
+updated_at 1473803532704 
+summary "Step into a world of discovery, exploration and adventure in The Legend of Zelda: Breath of the Wild, a boundary-breaking new game in the acclaimed series. Travel across fields, through forests and to mountain peaks as you discover what has become of the ruined kingdom of Hyrule in this stunning open-air adventure." 
+storyline Link awakes in a mysterious chamber after 100 years of slumber to find that Calamity Ganon has taken over Hyrule Castle and left Hyrule to decay and be taken over by nature. 
+collection 106 
+hypes 73 
+developers 70 
+publishers 70 
+category 0 
+game_modes 1 
+keywords 2446 1524 2030 2451 510 1309 2280 
+themes 17 38 1 21 
+genres 31 
+first_release_date 1514674800000 
+release_dates 
+	category 2 
+	platform 41 
+	date 1514674800000 
+	region 8 
+	alternative_names 
+		name Zelda Wii U 
+		name Zelda NX 
+	screenshots 
+		cloudinary_id tjlglyti9pi4cowyiact 
+			width 1591 
+			height 893 
+		cloudinary_id vbs1btl6ts17zeos4g5v 
+			width 1593 
+			height 893 
+		cloudinary_id zxqedjca8vbkkqafsqkv 
+			width 1597 
+			height 895 
+		cloudinary_id djytg7kqip9d5dgekfew 
+			width 1585 
+			height 887 
+		cloudinary_id ngyp9tw3elpfdngwc00i 
+			width 1593 
+			height 891 
+	videos 
+		name Trailer 
+		video_id Z6BeAtdoELY 
+		name Trailer 
+		video_id 1rPxiXXxftE 
+cover 
+	cloudinary_id id7oqxsma8y2lcazszzk 
+	width 300 
+	height 428

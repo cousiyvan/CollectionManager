@@ -52,7 +52,7 @@ namespace CollectionManager.Controllers
 
             if (Uri.TryCreate("https://igdbcom-internet-game-database-v1.p.mashape.com/", UriKind.Absolute, out gameApiRestUrl))
             {
-                parameters = "games/?fields=name,release_dates,esrb.synopsis,rating&limit=10&offset=0&order=release_dates.date%3Adesc&search=zelda"; ;
+                parameters = "games/?fields=*&limit=10&offset=0&order=release_dates.date%3Adesc&search=zelda"; ;
                 restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
                 json = restApi.DoCall();
 

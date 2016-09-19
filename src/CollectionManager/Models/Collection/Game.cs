@@ -25,7 +25,17 @@ namespace CollectionManager.Models.Collection
 
         public Dictionary<string, Uri> GameEngine { get; set; }
 
-        public Dictionary<string, Uri> GameModes { get; set; }
+        public List<string> GameModes { get; set; }
+        #endregion
+
+        #region constructors
+        public Game():base()
+        {
+            this.Developers = new List<string>();
+            this.PlayerPerspective = new Dictionary<string, Uri>();
+            this.GameEngine = new Dictionary<string, Uri>();
+            this.GameModes = new List<string>();
+        }
         #endregion
     }
 }
