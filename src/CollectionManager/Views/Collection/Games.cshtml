@@ -1,3 +1,4 @@
+@model CollectionManager.Models.Collection.Game
 @{
     ViewData["Title"] = "Games";
 }
@@ -9,5 +10,8 @@ Whatever ...
 
     <div>
     @ViewBag.Information
+    </div>
+    <div>
+        <img src="@Model.Pictures[0]" />
     </div>
 </div>

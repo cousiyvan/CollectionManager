@@ -67,7 +67,7 @@ namespace CollectionManager.Controllers
                 json = restApi.DoCall();
                 mapper.Mapping(json, ref game, restApi);
             }
-            return View();
+            return View(game);
         }
 
         /// <summary>
