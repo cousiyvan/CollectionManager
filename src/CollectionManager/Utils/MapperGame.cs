@@ -19,6 +19,9 @@ namespace CollectionManager.Utils
 
         public void Mapping(JsonReader json, ref Game game, RestAPI restApi)
         {
+            if (Utils.GamesCompanies.Count == 0)
+                Utils.FillBasicLists();
+
             // From json object we get the values to fill our object
             JArray jArray = JArray.Load(json);
             foreach (var jElement in jArray)
@@ -29,18 +32,18 @@ namespace CollectionManager.Utils
                 game.OriginalTitle = game.Title;
                 game.Description = (string)jElement.SelectToken("summary");
                 List<string> developers = jElement.SelectToken("developers").Select(s => (string)s).ToList<string>();
-                game.Developers.AddRange(developers);
+                game.Developers.AddRange(Utils.ConvertFromIdToElement<string>(Utils.GamesCompanies, developers));
                 List<string> publishers = jElement.SelectToken("publishers").Select(s => (string)s).ToList<string>();
-                game.Publishers.AddRange(publishers);
+                game.Publishers.AddRange(Utils.ConvertFromIdToElement<string>(Utils.GamesCompanies, publishers));
                 int category = (int)jElement.SelectToken("category");
                 List<string> gameModes = jElement.SelectToken("game_modes").Select(s => (string)s).ToList<string>();
-                game.GameModes.AddRange(gameModes);
+                game.GameModes.AddRange(Utils.ConvertFromIdToElement<string>(Utils.GamesMode, gameModes));
                 List<string> keywords = jElement.SelectToken("keywords").Select(s => (string)s).ToList<string>();
-                game.Keywords.AddRange(keywords);
+                game.Keywords.AddRange(Utils.ConvertFromIdToElement<string>(Utils.GamesKeywords, keywords));
                 List<string> themes = jElement.SelectToken("themes").Select(s => (string)s).ToList<string>();
-                game.Themes.AddRange(themes);
+                game.Themes.AddRange(Utils.ConvertFromIdToElement<string>(Utils.GamesThemes, themes));
                 List<string> genres = jElement.SelectToken("genres").Select(s => (string)s).ToList<string>();
-                game.Genres.AddRange(genres);
+                game.Genres.AddRange(Utils.ConvertFromIdToElement<string>(Utils.GamesGenres, genres));
                 game.ReleaseDate.Add((string)jElement.SelectToken("release_dates[0].platform"), Utils.UnixTimeStampToDateTime((double)jElement.SelectToken("release_dates[0].date")));
                 game.Poster = new Uri(string.Format("https://res.cloudinary.com/igdb/image/upload/t_{0}/{1}.jpg", "cover_big", (string)jElement.SelectToken("cover.cloudinary_id")));
                 List<string> pictures = jElement.SelectToken("screenshots").Select(s => (string)s.SelectToken("cloudinary_id")).ToList();

@@ -4,14 +4,43 @@
 }
 
 <h2>Games</h2>
-
-<div>
-Whatever ...
-
-    <div>
-    @ViewBag.Information
+    <div class="poster">
+        <img src="@Model.Poster" />
     </div>
     <div>
-        <img src="@Model.Pictures[0]" />
+        <p class="title">@Model.Title</p>
+        <!-- <p class="release-date">/p> -->
+    </div>
+    <div class="Information">
+        <p class="publishers">
+            @foreach (var p in Model.Publishers)
+            {
+                @:Publishers: @p
+            }
+        </p>
+        <p class="developers">
+            @foreach (var d in Model.Developers)
+            {
+                @:Developers: @d
+            }
+        </p>
+        <p class="genres">
+            @foreach (var g in Model.Genres)
+            {
+                @:Genres: @g
+            }
+        </p>
+        <p class="themes">
+            @foreach (var t in Model.Themes)
+            {
+                @:Themes: @t
+            }
+        </p>
+        <p class="pictures">
+            @foreach (var i in Model.Pictures)
+            {
+                <img src="@i" />
+            }
+        </p>
     </div>
 </div>
