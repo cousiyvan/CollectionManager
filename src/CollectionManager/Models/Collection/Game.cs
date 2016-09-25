@@ -5,18 +5,29 @@ using System.Threading.Tasks;
 
 namespace CollectionManager.Models.Collection
 {
-    public enum Category
-    {
-        MainGame=0,
-        DLC_Addon,
-        Expansion,
-        Bundle,
-        Standalone_Expansion
-    }
-
     public class Game: CollectionElementMaster
     {
         // igdb - API: https://market.mashape.com/igdbcom/internet-game-database
+        public enum Category
+        {
+            MainGame = 0,
+            DLC_Addon,
+            Expansion,
+            Bundle,
+            Standalone_Expansion
+        }
+        public enum CallType
+        {
+            Genres=0,
+            Companie,
+            Franchise,
+            Theme,
+            GamePerspective,
+            Platform,
+            Keyword,
+            Serie,
+            GameModes
+        }
 
         #region Properties
         public List<string> Developers { get; set; }

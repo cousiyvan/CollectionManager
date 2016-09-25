@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CollectionManager.Models.Collection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -9,15 +10,7 @@ namespace CollectionManager.Utils
 {
     public static class Utils {
         #region Properties
-        public static Dictionary<int, string> GamesGenres = new Dictionary<int, string>();
-        public static Dictionary<int, string> GamesCompanies = new Dictionary<int, string>();
-        public static Dictionary<int, string> GamesPlatforms = new Dictionary<int, string>();
-        public static Dictionary<int, string> GamesKeywords = new Dictionary<int, string>();
-        public static Dictionary<int, string> GamesMode = new Dictionary<int, string>();
-        public static Dictionary<int, string> GamesFranchises = new Dictionary<int, string>();
-        public static Dictionary<int, string> GamesSeries = new Dictionary<int, string>();
-        public static Dictionary<int, string> GamesThemes = new Dictionary<int, string>();
-        public static Dictionary<int, string> GamesPerspectives = new Dictionary<int, string>();
+        
         #endregion
         public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
         {
@@ -27,100 +20,68 @@ namespace CollectionManager.Utils
             return dtDateTime;
         }
 
-        public static void FillBasicLists()
+        public static List<string> GetContent(RestAPI restApi, Game.CallType callType, List<string> ids)
         {
-            Uri gameApiRestUrl = null;
-            string parameters = string.Empty;
-            Dictionary<string, string> apiKey = new Dictionary<string, string>();
-            apiKey.Add("X-Mashape-Key", "MtG6phh7A5mshHpRiU1ooJK3glr9p1S1VsejsnX9JomArwQspE");
-            RestAPI restApi = null;
             JsonReader json;
-            string restOutput = string.Empty;
-            MapperGame mapper = new MapperGame();
+            List<string> restOutput = new List<string>();
+            string callParam = string.Empty;
 
-            if (Uri.TryCreate("https://igdbcom-internet-game-database-v1.p.mashape.com/", UriKind.Absolute, out gameApiRestUrl))
+            switch (callType)
             {
-                // Genres
-                parameters = "genres/?fields=*&limit=50&offset=0"; ;
-                restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
-
-                json = restApi.DoCall();
-                JArray jArray = JArray.Load(json);
-                foreach (var jElement in jArray)
-                {
-                    GamesGenres.Add((int)jElement.SelectToken("id"), (string)jElement.SelectToken("name"));
-                }
-
-                // Platforms
-                restApi.Parameters = "platforms/?fields=*&limit=50&offset=0";
-
-                json = restApi.DoCall();
-                jArray = JArray.Load(json);
-                foreach (var jElement in jArray)
-                {
-                    GamesPlatforms.Add((int)jElement.SelectToken("id"), (string)jElement.SelectToken("name"));
-                }
-
-                // Keywords
-                restApi.Parameters = "keywords/?fields=*&limit=50&offset=0";
-
-                json = restApi.DoCall();
-                jArray = JArray.Load(json);
-                foreach (var jElement in jArray)
-                {
-                    GamesKeywords.Add((int)jElement.SelectToken("id"), (string)jElement.SelectToken("name"));
-                }
-
-                // Companies
-                restApi.Parameters = "companies/?fields=*&limit=50&offset=0";
-
-                json = restApi.DoCall();
-                jArray = JArray.Load(json);
-                foreach (var jElement in jArray)
-                {
-                    GamesCompanies.Add((int)jElement.SelectToken("id"), (string)jElement.SelectToken("name"));
-                }
-
-                // Modes
-                restApi.Parameters = "game_modes/?fields=*&limit=50&offset=0";
-
-                json = restApi.DoCall();
-                jArray = JArray.Load(json);
-                foreach (var jElement in jArray)
-                {
-                    GamesMode.Add((int)jElement.SelectToken("id"), (string)jElement.SelectToken("name"));
-                }
-
-                // Franchises
-                restApi.Parameters = "franchises/?fields=*&limit=50&offset=0";
-
-                json = restApi.DoCall();
-                jArray = JArray.Load(json);
-                foreach (var jElement in jArray)
-                {
-                    GamesFranchises.Add((int)jElement.SelectToken("id"), (string)jElement.SelectToken("name"));
-                }
-
-                // Series
-                restApi.Parameters = "collections/?fields=*&limit=50&offset=0";
-
-                json = restApi.DoCall();
-                jArray = JArray.Load(json);
-                foreach (var jElement in jArray)
-                {
-                    GamesSeries.Add((int)jElement.SelectToken("id"), (string)jElement.SelectToken("name"));
-                }
-
-                // Perspective
-                restApi.Parameters = "player_perspectives/?fields=*&limit=50&offset=0";
-
-                json = restApi.DoCall();
-                jArray = JArray.Load(json);
-                foreach (var jElement in jArray)
-                {
-                    GamesPerspectives.Add((int)jElement.SelectToken("id"), (string)jElement.SelectToken("name"));
-                }
+                case Game.CallType.Companie:
+                    callParam = "/companies/";
+                    break;
+                case Game.CallType.Franchise:
+                    callParam = "/franchises/";
+                    break;
+                case Game.CallType.GamePerspective:
+                    callParam = "/player_perspectives/";
+                    break;
+                case Game.CallType.Genres:
+                    callParam = "/genres/";
+                    break;
+                case Game.CallType.Keyword:
+                    callParam = "/keywords/";
+                    break;
+                case Game.CallType.Platform:
+                    callParam = "/platforms/";
+                    break;
+                case Game.CallType.Serie:
+                    callParam = "/series/";
+                    break;
+                case Game.CallType.Theme:
+                    callParam = "/themes/";
+                    break;
+                case Game.CallType.GameModes:
+                    callParam = "/game_modes/";
+                    break;
+                default:
+                    callParam = "/games/";
+                    break;
             }
+
+            // Covnert from list to single string splitted with ","
+            string idSplitted = string.Empty;
+            if (ids.Count > 1)
+            {
+                ids.ForEach(x => idSplitted += string.Format("{0},", x));
+                idSplitted = idSplitted.Remove(idSplitted.Length-1);
+            }
+            else
+                ids.ForEach(x => idSplitted += string.Format("{0}", x));
+
+            restApi.Parameters = string.Format("{0}{1}?fields=*&limit=40", callParam, idSplitted);
+
+            json = restApi.DoCall();
+
+            JArray jArray = JArray.Load(json);
+            foreach (var jElement in jArray)
+            {
+                // Values from first call
+                restOutput.Add((string)jElement.SelectToken("name"));
+            }
+
+            return restOutput;
         }
 
         public static List<T> ConvertFromIdToElement<T>(Dictionary<int, T> mappingTable, List<T> elements)

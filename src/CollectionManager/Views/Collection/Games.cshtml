@@ -9,37 +9,60 @@
     </div>
     <div>
         <p class="title">@Model.Title</p>
-        <!-- <p class="release-date">/p> -->
+        <p class="release-date">
+            @foreach (var k in Model.ReleaseDate.Keys)
+            {
+                @: @k -  @Model.ReleaseDate[k].ToString("d")
+            }
+        </p>
+        <p class="summary">Description: @Model.Description</p>
     </div>
     <div class="Information">
         <p class="publishers">
+            Publishers:
             @foreach (var p in Model.Publishers)
             {
-                @:Publishers: @p
+                @: @p
             }
         </p>
         <p class="developers">
+            Developers:
             @foreach (var d in Model.Developers)
             {
-                @:Developers: @d
+               @: @d
             }
         </p>
         <p class="genres">
+            Genres: 
             @foreach (var g in Model.Genres)
             {
-                @:Genres: @g
+                @: @g
             }
         </p>
         <p class="themes">
+        Themes:
             @foreach (var t in Model.Themes)
             {
-                @:Themes: @t
+                @:  @t
+            }
+        </p>
+        <p class="keywords">
+            Keywords:
+            @foreach (var k in Model.Keywords)
+            {
+                @:  @k
             }
         </p>
         <p class="pictures">
             @foreach (var i in Model.Pictures)
             {
                 <img src="@i" />
+            }
+        </p>
+        <p class="videos">
+            @foreach (var v in Model.Videos)
+            {
+                <iframe width="420" height="315" src="@v"></iframe>
             }
         </p>
     </div>
