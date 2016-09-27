@@ -48,11 +48,7 @@ namespace CollectionManager.Utils
                     platform = Utils.GetContent(restApi, Game.CallType.Platform, new List<string>() { platform })[0];
                     game.ReleaseDate.Add(platform, Utils.UnixTimeStampToDateTime((double)token.Children()["date"].ToList()[0]));
                 }
-
-                //string platform = (string)jElement.SelectToken("release_dates[0].platform");
-                //platform = Utils.GetContent(restApi, Game.CallType.Platform, new List<string>() { platform })[0];
-                //game.ReleaseDate.Add(platform, Utils.UnixTimeStampToDateTime((double)jElement.SelectToken("release_dates[0].date")));
-
+                
                 game.Poster = new Uri(string.Format("https://res.cloudinary.com/igdb/image/upload/t_{0}/{1}.jpg", "cover_big", (string)jElement.SelectToken("cover.cloudinary_id")));
                 List<string> pictures = jElement.SelectToken("screenshots").Select(s => (string)s.SelectToken("cloudinary_id")).ToList();
                 foreach (var p in pictures)
