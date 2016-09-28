@@ -17,30 +17,71 @@ namespace CollectionManager.Utils
         }
         #endregion
 
-        public void Mapping(JsonReader json, ref Game game, RestAPI restApi)
+        public List<Game> Mapping(JsonReader json, RestAPI restApi)
         {
+            List<Game> games = new List<Game>();
+
             // From json object we get the values to fill our object
             JArray jArray = JArray.Load(json);
             foreach (var jElement in jArray)
             {
+                Game game = new Game();
                 // Values from first call
                 game.Id = (int)jElement.SelectToken("id");
                 game.Title = (string)jElement.SelectToken("name");
                 game.OriginalTitle = game.Title;
                 game.Description = (string)jElement.SelectToken("summary");
-                List<string> developers = jElement.SelectToken("developers").Select(s => (string)s).ToList<string>();
-                game.Developers.AddRange(Utils.GetContent(restApi, Game.CallType.Companie, developers));
-                List<string> publishers = jElement.SelectToken("publishers").Select(s => (string)s).ToList<string>();
-                game.Publishers.AddRange(Utils.GetContent(restApi, Game.CallType.Companie, publishers));
+                game.Description = (string)jElement.SelectToken("storyline");
+
+                List<string> developers = new List<string>();
+                JToken jToken = jElement.SelectToken("developers");
+                if (jToken != null)
+                {
+                    developers = jElement.SelectToken("developers").Select(s => (string)s).ToList<string>();
+                    game.Developers.AddRange(Utils.GetContent(restApi, Game.CallType.Companie, developers));
+                }
+
+                List<string> publishers = new List<string>();
+                jToken = jElement.SelectToken("publishers");
+                if (jToken != null)
+                {
+                    publishers = jElement.SelectToken("publishers").Select(s => (string)s).ToList<string>();
+                    game.Publishers.AddRange(Utils.GetContent(restApi, Game.CallType.Companie, publishers));
+                }
+
                 int category = (int)jElement.SelectToken("category");
-                List<string> gameModes = jElement.SelectToken("game_modes").Select(s => (string)s).ToList<string>();
-                game.GameModes.AddRange(Utils.GetContent(restApi, Game.CallType.GameModes, gameModes));
-                List<string> keywords = jElement.SelectToken("keywords").Select(s => (string)s).ToList<string>();
-                game.Keywords.AddRange(Utils.GetContent(restApi, Game.CallType.Keyword, keywords));
-                List<string> themes = jElement.SelectToken("themes").Select(s => (string)s).ToList<string>();
-                game.Themes.AddRange(Utils.GetContent(restApi, Game.CallType.Theme, themes));
-                List<string> genres = jElement.SelectToken("genres").Select(s => (string)s).ToList<string>();
-                game.Genres.AddRange(Utils.GetContent(restApi, Game.CallType.Genres, genres));
+
+                List<string> gameModes = new List<string>();
+                jToken = jElement.SelectToken("game_modes");
+                if (jToken != null)
+                {
+                    gameModes = jElement.SelectToken("game_modes").Select(s => (string)s).ToList<string>();
+                    game.GameModes.AddRange(Utils.GetContent(restApi, Game.CallType.GameModes, gameModes));
+                }
+
+                List<string> keywords = new List<string>();
+                jToken = jElement.SelectToken("keywords");
+                if (jToken != null)
+                {
+                    keywords = jElement.SelectToken("keywords").Select(s => (string)s).ToList<string>();
+                    game.Keywords.AddRange(Utils.GetContent(restApi, Game.CallType.Keyword, keywords));
+                }
+
+                List<string> themes = new List<string>();
+                jToken = jElement.SelectToken("themes");
+                if (jToken != null)
+                {
+                    themes = jElement.SelectToken("themes").Select(s => (string)s).ToList<string>();
+                    game.Themes.AddRange(Utils.GetContent(restApi, Game.CallType.Theme, themes));
+                }
+
+                List<string> genres = new List<string>();
+                jToken = jElement.SelectToken("genres");
+                if (jToken != null)
+                {
+                    genres = jElement.SelectToken("genres").Select(s => (string)s).ToList<string>();
+                    game.Genres.AddRange(Utils.GetContent(restApi, Game.CallType.Genres, genres));
+                }
 
                 foreach (var token in jElement.SelectTokens("release_dates"))
                 {
@@ -73,8 +114,10 @@ namespace CollectionManager.Utils
                 // We get information from new call
                 // restApi.Parameters = "";
 
-                break;
+                games.Add(game);
             }
+
+            return games;
         }
     }
 }

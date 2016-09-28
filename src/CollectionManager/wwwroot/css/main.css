@@ -1,14 +1,10 @@
-﻿body {
+﻿.col{
+    padding:0;
+}
+.poster{
+    text-align:center;
 }
 
-.poster {
-    float: left;
-}
-
-.information {
-    
-}
-
-.media {
-    overflow:hidden;
+.poster img {
+    width:40%;
 }

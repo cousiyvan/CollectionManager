@@ -1,70 +1,119 @@
-@model CollectionManager.Models.Collection.Game
+@model List<CollectionManager.Models.Collection.Game>
 @{
     ViewData["Title"] = "Games";
 }
 
 <h2>Games</h2>
-    <div class="poster">
-        <img src="@Model.Poster" />
-    </div>
-    <div class="information">
-        <p class="title">@Model.Title</p>
-        <p class="release-date">
-            @foreach (var k in Model.ReleaseDate.Keys)
-            {
-                @: @k -  @Model.ReleaseDate[k].ToString("d")
-            }
-        </p>
-        <p class="summary">Description: @Model.Description</p>
+<div class="container-fluid">
+    @for (var i = 0; i < Model.Count; i+=2)
+    {
+        <!-- @Html.Raw(i % 2 == 0 ? "<div class='row'>": "") -->
+        <div class="row">
+            <div class="poster col-md-3 col">
+                <a asp-action="Games" asp-controller="Collection" asp-route-id="@Model[i].Id">
+                    <img style="width:50%;" src="@Model[i].Poster" />
+                </a>
+            </div>
+            <div class="information col-md-3 col">
+                <p class="title">@Model[i].Title</p>
+                <p class="release-date">
+                    @foreach (var k in Model[i].ReleaseDate.Keys)
+                    {
+                        @: @k -  @Model[i].ReleaseDate[k].ToString("d")
+                        }
+                </p>
+                <p class="summary">Description: @Model[i].Storyline</p>
 
-        <p class="publishers">
-            Publishers:
-            @foreach (var p in Model.Publishers)
+                <p class="publishers">
+                    Publishers:
+                    @foreach (var p in Model[i].Publishers)
+                    {
+                        @: @p
+                        }
+                </p>
+                <p class="developers">
+                    Developers:
+                    @foreach (var d in Model[i].Developers)
+                    {
+                        @: @d
+                        }
+                </p>
+                <p class="genres">
+                    Genres:
+                    @foreach (var g in Model[i].Genres)
+                    {
+                        @: @g
+                        }
+                </p>
+                <p class="themes">
+                    Themes:
+                    @foreach (var t in Model[i].Themes)
+                    {
+                        @:  @t
+                        }
+                </p>
+                <p class="keywords">
+                    Keywords:
+                    @foreach (var k in Model[i].Keywords)
+                    {
+                        @:  @k
+                        }
+                </p>
+            </div>
+
+            @if ((i+1) < Model.Count)
             {
-                @: @p
+            <div class="poster col-md-3 col">
+                <img src="@Model[i + 1].Poster" />
+            </div>
+            <div class="information col-md-3 col">
+                <p class="title">@Model[i + 1].Title</p>
+                <p class="release-date">
+                    @foreach (var k in Model[i + 1].ReleaseDate.Keys)
+                    {
+                        @: @k -  @Model[i + 1].ReleaseDate[k].ToString("d")
+                        }
+                </p>
+                <p class="summary">Description: @Model[i + 1].Storyline</p>
+
+                <p class="publishers">
+                    Publishers:
+                    @foreach (var p in Model[i + 1].Publishers)
+                    {
+                        @: @p
+                        }
+                </p>
+                <p class="developers">
+                    Developers:
+                    @foreach (var d in Model[i + 1].Developers)
+                    {
+                        @: @d
+                        }
+                </p>
+                <p class="genres">
+                    Genres:
+                    @foreach (var g in Model[i + 1].Genres)
+                    {
+                        @: @g
+                        }
+                </p>
+                <p class="themes">
+                    Themes:
+                    @foreach (var t in Model[i + 1].Themes)
+                    {
+                        @:  @t
+                        }
+                </p>
+                <p class="keywords">
+                    Keywords:
+                    @foreach (var k in Model[i + 1].Keywords)
+                    {
+                        @:  @k
+                        }
+                </p>
+            </div>
             }
-        </p>
-        <p class="developers">
-            Developers:
-            @foreach (var d in Model.Developers)
-            {
-               @: @d
-            }
-        </p>
-        <p class="genres">
-            Genres: 
-            @foreach (var g in Model.Genres)
-            {
-                @: @g
-            }
-        </p>
-        <p class="themes">
-        Themes:
-            @foreach (var t in Model.Themes)
-            {
-                @:  @t
-            }
-        </p>
-        <p class="keywords">
-            Keywords:
-            @foreach (var k in Model.Keywords)
-            {
-                @:  @k
-            }
-        </p>
+            <!-- @Html.Raw(i % 2 == 0 ? "</div>" : "") -->
         </div>
-        <div class="media">
-            <p class="pictures">
-                @foreach (var i in Model.Pictures)
-                {
-                    <img src="@i" />
-                }
-            </p>
-            <p class="videos">
-                @foreach (var v in Model.Videos)
-                {
-                    <iframe width="420" height="315" src="@v"></iframe>
-                }
-            </p>
-    </div>
+}
 </div>

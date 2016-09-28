@@ -38,7 +38,7 @@ namespace CollectionManager.Controllers
         /// Controller to the Games view
         /// </summary>
         /// <returns>The view to be displayed</returns>
-        public IActionResult Games()
+        public IActionResult Games(int? id)
         {
             Uri gameApiRestUrl = null;
             string parameters = string.Empty;
@@ -48,26 +48,50 @@ namespace CollectionManager.Controllers
             JsonReader json;
             string restOutput = string.Empty;
             MapperGame mapper = new MapperGame();
-            Game game = new Game();
+            List<Game> games = null;
 
             if (Uri.TryCreate("https://igdbcom-internet-game-database-v1.p.mashape.com/", UriKind.Absolute, out gameApiRestUrl))
             {
-                parameters = "games/?fields=*&limit=10&offset=0&order=release_dates.date%3Adesc&search=zelda"; ;
-                restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
-                json = restApi.DoCall();
-
-                while (json.Read())
+                if (id != null)
                 {
-                    if (json.Value != null)
-                    {
-                        ViewBag.Information += json.Value + " ";
-                    }
+                    parameters = $"games/{id}?fields=*&limit=10";
                 }
+                else
+                {
+                    parameters = "games/?fields=*&limit=10&offset=0&order=release_dates.date%3Adesc&search=zelda";
+                }
+                restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
+                //json = restApi.DoCall();
+
+                //while (json.Read())
+                //{
+                //    if (json.Value != null)
+                //    {
+                //        ViewBag.Information += json.Value + " ";
+                //    }
+                //}
 
                 json = restApi.DoCall();
-                mapper.Mapping(json, ref game, restApi);
+                games = mapper.Mapping(json, restApi);
             }
-            return View(game);
+            if (games == null)
+                games = new List<Game>();
+
+            ViewResult view = null;
+            if (games.Count > 1)
+            {
+                 view = View(games);
+            }
+            else if (games.Count == 1)
+            {
+                view = View("~/Views/Collection/GameDetails.cshtml", games[0]);
+            }
+            else
+            {
+                view = new ViewResult();
+            }
+
+            return view;
         }
 
         /// <summary>

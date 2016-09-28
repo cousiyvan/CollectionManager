@@ -28,6 +28,8 @@ namespace CollectionManager.Models.Collection
 
         public string Description { get; set; }
 
+        public string Storyline { get; set; }
+
         public string Title { get; set; }
 
         public string OriginalTitle { get; set; }
