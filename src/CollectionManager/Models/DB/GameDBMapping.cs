@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace CollectionManager.Models.DB
 {
-    public class GameDBMapping
+    public class GameDbMapping
     {
         #region Properties
         public int Id { get; set; }
