@@ -1,4 +1,7 @@
-﻿using CollectionManager.Models.Collection;
+﻿using CollectionManager.Data;
+using CollectionManager.Models;
+using CollectionManager.Models.Collection;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -17,7 +20,7 @@ namespace CollectionManager.Utils
         }
         #endregion
 
-        public List<Game> Mapping(JsonReader json, RestAPI restApi)
+        public List<Game> Mapping(JsonReader json, RestAPI restApi, GameContext context, ApplicationUser user)
         {
             List<Game> games = new List<Game>();
 
@@ -31,7 +34,7 @@ namespace CollectionManager.Utils
                 game.Title = (string)jElement.SelectToken("name");
                 game.OriginalTitle = game.Title;
                 game.Description = (string)jElement.SelectToken("summary");
-                game.Description = (string)jElement.SelectToken("storyline");
+                game.Storyline = (string)jElement.SelectToken("storyline");
 
                 List<string> developers = new List<string>();
                 JToken jToken = jElement.SelectToken("developers");
@@ -113,6 +116,15 @@ namespace CollectionManager.Utils
                 // id 7346 name The Legend of Zelda: Breath of the Wild release_dates category 2 platform 41 date 1514674800000 region 8 
                 // We get information from new call
                 // restApi.Parameters = "";
+
+                var linqForGame = from g in context.GameDbMapping.ToList()
+                                  where g.GameId == game.Id && (user != null && user.Id == g.UserId)
+                                  select g;
+
+                if (linqForGame.ToList().Count > 0)
+                    game.gameDb = linqForGame.First();
+                else
+                    game.gameDb = new Models.DB.GameDbMapping();
 
                 games.Add(game);
             }

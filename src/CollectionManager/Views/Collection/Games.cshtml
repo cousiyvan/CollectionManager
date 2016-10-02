@@ -1,4 +1,6 @@
 @model List<CollectionManager.Models.Collection.Game>
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 @{
     ViewData["Title"] = "Games";
 }
@@ -16,6 +18,15 @@
             </div>
             <div class="information col-md-3 col">
                 <p class="title">@Model[i].Title</p>
+                <p class="connected">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    @if (Model[i].gameDb.Collection)
+                    {
+                        <span>Part of the collection of the user</span>
+                    }
+                }
+                </p>
                 <p class="release-date">
                     @foreach (var k in Model[i].ReleaseDate.Keys)
                     {
@@ -24,14 +35,14 @@
                 </p>
                 <p class="summary">Description: @Model[i].Storyline</p>
 
-                <p class="publishers">
+                @*<p class="publishers">
                     Publishers:
                     @foreach (var p in Model[i].Publishers)
                     {
                         @: @p
                         }
-                </p>
-                <p class="developers">
+                </p>*@
+                @*<p class="developers">
                     Developers:
                     @foreach (var d in Model[i].Developers)
                     {
@@ -51,7 +62,7 @@
                     {
                         @:  @t
                         }
-                </p>
+                </p>*@
                 <p class="keywords">
                     Keywords:
                     @foreach (var k in Model[i].Keywords)

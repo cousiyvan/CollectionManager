@@ -11,14 +11,16 @@ namespace CollectionManager.Models
     {
         public static void Initialize(GameContext gameContext)
         {
+            // gameContext.Database.EnsureDeleted();
             gameContext.Database.EnsureCreated();
 
             if (gameContext.GameDbMapping.Any())
-                return;
+                gameContext.RemoveRange(gameContext.GameDbMapping.Select(x => x));
 
             var gameDbMappings = new GameDbMapping[]
             {
-                new GameDbMapping { Collection = true, Favorite = true, Id = 1, GameId = -1, UserId = 1, Wishlist = false }
+                new GameDbMapping { Collection = true, Favorite = true, GameId = 7346, UserId = "f09840b0-ef68-484e-9f94-45fce866bf7a", Wishlist = false },
+                new GameDbMapping { Collection = true, Favorite = true, GameId = 7346, UserId = "73364d2e-acdb-44b9-9251-e29ea921a9fc", Wishlist = false }
             };
             foreach (GameDbMapping gameDb in gameDbMappings)
             {

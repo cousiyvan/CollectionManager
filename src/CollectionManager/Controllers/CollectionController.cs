@@ -9,6 +9,10 @@ using CollectionManager.Utils;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using CollectionManager.Models.Collection;
+using CollectionManager.Data;
+using Microsoft.AspNetCore.Identity;
+using CollectionManager.Models;
+using Microsoft.Extensions.Logging;
 
 namespace CollectionManager.Controllers
 {
@@ -16,12 +20,25 @@ namespace CollectionManager.Controllers
     {
         #region Members
         private readonly AppSettings _appSettings;
+        private readonly GameContext _gameContext;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ILogger _logger;
         #endregion
 
         #region Constructors
-        public CollectionController(IOptions<AppSettings> appSettings)
+        public CollectionController(
+            IOptions<AppSettings> appSettings, 
+            GameContext gameContext, 
+            UserManager<ApplicationUser> userManager, 
+            SignInManager<ApplicationUser> signInManager, 
+            ILoggerFactory loggerFactory)
         {
             _appSettings = appSettings.Value;
+            _gameContext = gameContext;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _logger = loggerFactory.CreateLogger<AccountController>();
         }
         #endregion
 
@@ -43,14 +60,14 @@ namespace CollectionManager.Controllers
             Uri gameApiRestUrl = null;
             string parameters = string.Empty;
             Dictionary<string, string> apiKey = new Dictionary<string, string>();
-            apiKey.Add("X-Mashape-Key", "MtG6phh7A5mshHpRiU1ooJK3glr9p1S1VsejsnX9JomArwQspE");
+            apiKey.Add("X-Mashape-Key", _appSettings.ApiKey.Game);
             RestAPI restApi = null;
             JsonReader json;
             string restOutput = string.Empty;
             MapperGame mapper = new MapperGame();
             List<Game> games = null;
 
-            if (Uri.TryCreate("https://igdbcom-internet-game-database-v1.p.mashape.com/", UriKind.Absolute, out gameApiRestUrl))
+            if (Uri.TryCreate(_appSettings.ServicesSettings.Game, UriKind.Absolute, out gameApiRestUrl))
             {
                 if (id != null)
                 {
@@ -72,7 +89,20 @@ namespace CollectionManager.Controllers
                 //}
 
                 json = restApi.DoCall();
-                games = mapper.Mapping(json, restApi);
+                ApplicationUser user = null;
+                if (User.Identity.Name != null)
+                {
+                    try
+                    {
+                        user = _userManager.FindByNameAsync(User.Identity.Name).Result;
+                    }
+                    catch (Exception exc)
+                    {
+                        _logger.LogError("Error during retrieval of user");
+                        user = null;
+                    }
+                }
+                games = mapper.Mapping(json, restApi, _gameContext, user);
             }
             if (games == null)
                 games = new List<Game>();

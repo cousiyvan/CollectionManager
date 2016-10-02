@@ -1,11 +1,12 @@
-﻿using System;
+﻿using CollectionManager.Models.DB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace CollectionManager.Models.Collection
 {
-    public class Game: CollectionElementMaster
+    public class Game : CollectionElementMaster
     {
         // igdb - API: https://market.mashape.com/igdbcom/internet-game-database
         public enum Category
@@ -18,7 +19,7 @@ namespace CollectionManager.Models.Collection
         }
         public enum CallType
         {
-            Genres=0,
+            Genres = 0,
             Companie,
             Franchise,
             Theme,
@@ -37,6 +38,8 @@ namespace CollectionManager.Models.Collection
         public Dictionary<string, Uri> GameEngine { get; set; }
 
         public List<string> GameModes { get; set; }
+
+        public GameDbMapping gameDb { get; set; }
         #endregion
 
         #region constructors

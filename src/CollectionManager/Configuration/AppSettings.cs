@@ -8,5 +8,6 @@ namespace CollectionManager.Configuration
     public class AppSettings
     {
         public ServicesSettings ServicesSettings { get; set; }
+        public ApiKey ApiKey { get; set; }
     }
 }
