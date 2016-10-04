@@ -13,6 +13,7 @@ using CollectionManager.Data;
 using Microsoft.AspNetCore.Identity;
 using CollectionManager.Models;
 using Microsoft.Extensions.Logging;
+using CollectionManager.Models.DB;
 
 namespace CollectionManager.Controllers
 {
@@ -89,19 +90,7 @@ namespace CollectionManager.Controllers
                 //}
 
                 json = restApi.DoCall();
-                ApplicationUser user = null;
-                if (User.Identity.Name != null)
-                {
-                    try
-                    {
-                        user = _userManager.FindByNameAsync(User.Identity.Name).Result;
-                    }
-                    catch (Exception exc)
-                    {
-                        _logger.LogError("Error during retrieval of user");
-                        user = null;
-                    }
-                }
+                ApplicationUser user = this.GetConnectedUser();
                 games = mapper.Mapping(json, restApi, _gameContext, user);
             }
             if (games == null)
@@ -122,6 +111,42 @@ namespace CollectionManager.Controllers
             }
 
             return view;
+        }
+
+        public IActionResult AddGameCollection(int id)
+        {
+            ApplicationUser user = this.GetConnectedUser();
+
+            if (id == null)
+                new ViewResult();
+            else
+            {
+                var objectExists = from gameDb in _gameContext.GameDbMapping
+                                   where gameDb.GameId == id
+                                   where gameDb.UserId == user.Id
+                                   select gameDb;
+
+                if (objectExists.ToList().Count > 0)
+                {
+                    objectExists.ToList()[0].Collection = !objectExists.ToList()[0].Collection;
+                    this._gameContext.SaveChanges();
+                }
+                else
+                {
+                    GameDbMapping gameDbMapping = new GameDbMapping
+                    {
+                        Collection = true,
+                        Favorite = false,
+                        Wishlist = false,
+                        GameId = id,
+                        UserId = user.Id
+                    };
+                    this._gameContext.GameDbMapping.Add(gameDbMapping);
+                    this._gameContext.SaveChanges();
+                }
+            }
+
+            return RedirectToAction(nameof(CollectionController.Games), "Collection");
         }
 
         /// <summary>
@@ -159,5 +184,26 @@ namespace CollectionManager.Controllers
         {
             return View();
         }
+
+        #region Utils
+        private ApplicationUser GetConnectedUser()
+        {
+            ApplicationUser user = null;
+            if (User.Identity.Name != null)
+            {
+                try
+                {
+                    user = _userManager.FindByNameAsync(User.Identity.Name).Result;
+                }
+                catch (Exception exc)
+                {
+                    _logger.LogError("Error during retrieval of user:" + exc.InnerException);
+                    user = null;
+                }
+            }
+
+            return user;
+        }
+        #endregion
     }
 }

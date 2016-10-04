@@ -12,21 +12,52 @@
         <!-- @Html.Raw(i % 2 == 0 ? "<div class='row'>": "") -->
         <div class="row">
             <div class="poster col-md-3 col">
-                <a asp-action="Games" asp-controller="Collection" asp-route-id="@Model[i].Id">
-                    <img style="width:50%;" src="@Model[i].Poster" />
-                </a>
+                <p>
+                    <a asp-action="Games" asp-controller="Collection" asp-route-id="@Model[i].Id">
+                        <img style="width:50%;" src="@Model[i].Poster" />
+                    </a>
+                </p>
+                <p class="connected-information">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                            @if (Model[i].gameDb.Collection)
+                            {
+                                <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
+                            }
+                            else
+                            {
+                                <a asp-action="AddGameCollection" asp-controller="Collection" asp-route-id="@Model[i].Id">
+                                    <span class="glyphicon glyphicon-folder-open icon-pos" aria-hidden="true"></span>
+                                </a>
+
+                            }
+                            @if (Model[i].gameDb.Wishlist)
+                            {
+                                <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
+                            }
+                            else
+                            {
+                                <span class="glyphicon glyphicon-shopping-cart icon-pos" aria-hidden="true"></span>
+
+                            }
+                            @if (Model[i].gameDb.Favorite)
+                            {
+                                <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
+                            }
+                            else
+                            {
+                                <span class="glyphicon glyphicon-heart icon-pos" aria-hidden="true"></span>
+                            }
+                    }
+                    else
+                    {
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                        <span class="info">Connect first to be able to add items</span>
+                    }
+                </p>
             </div>
             <div class="information col-md-3 col">
                 <p class="title">@Model[i].Title</p>
-                <p class="connected">
-                @if (SignInManager.IsSignedIn(User))
-                {
-                    @if (Model[i].gameDb.Collection)
-                    {
-                        <span>Part of the collection of the user</span>
-                    }
-                }
-                </p>
                 <p class="release-date">
                     @foreach (var k in Model[i].ReleaseDate.Keys)
                     {
@@ -75,7 +106,50 @@
             @if ((i+1) < Model.Count)
             {
             <div class="poster col-md-3 col">
-                <img src="@Model[i + 1].Poster" />
+                <p>
+                    <a asp-action="Games" asp-controller="Collection" asp-route-id="@Model[i+1].Id">
+                        <img style="width:50%;" src="@Model[i+1].Poster" />
+                    </a>
+                </p>
+                <p class="connected-information">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        @if (Model[i+1].gameDb.Collection)
+                        {
+                            <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
+                        }
+                        else
+                        {
+                            <a asp-action="AddGameCollection" asp-controller="Collection" asp-route-id="@Model[i+1].Id">
+                                <span class="glyphicon glyphicon-folder-open icon-pos" aria-hidden="true"></span>
+                            </a>
+
+                        }
+                        @if (Model[i+1].gameDb.Wishlist)
+                        {
+                            <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
+                        }
+                        else
+                        {
+                            <span class="glyphicon glyphicon-shopping-cart icon-pos" aria-hidden="true"></span>
+
+                        }
+                        @if (Model[i + 1].gameDb.Favorite)
+                        {
+                            <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
+                        }
+                        else
+                        {
+                            <span class="glyphicon glyphicon-heart icon-pos" aria-hidden="true"></span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                        <span class="info">Connect first to be able to add items</span>
+                    }
+                </p>
+
             </div>
             <div class="information col-md-3 col">
                 <p class="title">@Model[i + 1].Title</p>
@@ -86,35 +160,6 @@
                         }
                 </p>
                 <p class="summary">Description: @Model[i + 1].Storyline</p>
-
-                <p class="publishers">
-                    Publishers:
-                    @foreach (var p in Model[i + 1].Publishers)
-                    {
-                        @: @p
-                        }
-                </p>
-                <p class="developers">
-                    Developers:
-                    @foreach (var d in Model[i + 1].Developers)
-                    {
-                        @: @d
-                        }
-                </p>
-                <p class="genres">
-                    Genres:
-                    @foreach (var g in Model[i + 1].Genres)
-                    {
-                        @: @g
-                        }
-                </p>
-                <p class="themes">
-                    Themes:
-                    @foreach (var t in Model[i + 1].Themes)
-                    {
-                        @:  @t
-                        }
-                </p>
                 <p class="keywords">
                     Keywords:
                     @foreach (var k in Model[i + 1].Keywords)

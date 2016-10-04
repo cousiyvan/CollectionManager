@@ -22,6 +22,8 @@ namespace CollectionManager.Utils
 
         public List<Game> Mapping(JsonReader json, RestAPI restApi, GameContext context, ApplicationUser user)
         {
+            int counter=0;
+            int MaxCount = 4;
             List<Game> games = new List<Game>();
 
             // From json object we get the values to fill our object
@@ -127,6 +129,10 @@ namespace CollectionManager.Utils
                     game.gameDb = new Models.DB.GameDbMapping();
 
                 games.Add(game);
+
+                if (counter == MaxCount)
+                    break;
+                counter++;
             }
 
             return games;
