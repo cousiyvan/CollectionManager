@@ -117,7 +117,7 @@ namespace CollectionManager.Controllers
         {
             ApplicationUser user = this.GetConnectedUser();
 
-            if (id == null)
+            if (id == 0)
                 new ViewResult();
             else
             {

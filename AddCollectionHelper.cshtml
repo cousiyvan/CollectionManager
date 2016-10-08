@@ -1,0 +1,41 @@
+@helper CreateLoginContent(bool isSignedIn, int? id)
+{
+    <p class="connected-information">
+        @if (isSignedIn)
+        {
+            if (Model.gameDb.Collection)
+            {
+                <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
+            }
+            else
+            {
+                <a asp-action="AddGameCollection" asp-controller="Collection" asp-route-id="@id">
+                    <span class="glyphicon glyphicon-folder-open icon-pos" aria-hidden="true"></span>
+                </a>
+
+            }
+            if (Model.gameDb.Wishlist)
+            {
+                <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
+            }
+            else
+            {
+                <span class="glyphicon glyphicon-shopping-cart icon-pos" aria-hidden="true"></span>
+
+            }
+            if (Model.gameDb.Favorite)
+            {
+                <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
+            }
+            else
+            {
+                <span class="glyphicon glyphicon-heart icon-pos" aria-hidden="true"></span>
+            }
+        }
+        else
+        {
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+                    <span class="info">Connect first to be able to add items</span>
+        }
+    </p>
+}

@@ -8,3 +8,16 @@
 .poster img {
     width:40%;
 }
+
+.media img{
+    width:25%;
+}
+
+.connected-information {
+    text-align: center;
+    width: 100%;
+}
+
+.logged-icon{
+    padding-left: 15px;
+}
