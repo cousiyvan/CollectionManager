@@ -17,7 +17,7 @@
                         <img style="width:50%;" src="@Model[i].Poster" />
                     </a>
                 </p>
-                @await Html.PartialAsync("_AddCollectionHelper")
+                @await Html.PartialAsync("_AddCollectionHelper", Model[i])
             </div>
             <div class="information col-md-3 col">
                 <p class="title">@Model[i].Title</p>
@@ -27,38 +27,18 @@
                         @: @k -  @Model[i].ReleaseDate[k].ToString("d")
                         }
                 </p>
-                <p class="summary">Description: @Model[i].Storyline</p>
-
-                @*<p class="publishers">
-                    Publishers:
-                    @foreach (var p in Model[i].Publishers)
-                    {
-                        @: @p
-                        }
-                </p>*@
-                @*<p class="developers">
-                    Developers:
-                    @foreach (var d in Model[i].Developers)
-                    {
-                        @: @d
-                        }
-                </p>
-                <p class="genres">
-                    Genres:
-                    @foreach (var g in Model[i].Genres)
-                    {
-                        @: @g
-                        }
-                </p>
-                <p class="themes">
-                    Themes:
-                    @foreach (var t in Model[i].Themes)
-                    {
-                        @:  @t
-                        }
-                </p>*@
+                @if (!string.IsNullOrEmpty(Model[i].Storyline))
+                {
+                    int length = (Model[i].Storyline.Length > (int)ViewData["SummaryMaxCharacters"])? (int)ViewData["SummaryMaxCharacters"]:Model[i].Storyline.Length;
+                    <p class="summary"><h4>Description:</h4> @Model[i].Storyline.Substring(0, length) <text>...</text></p>
+                }
+                else if (!string.IsNullOrEmpty(Model[i].Description))
+                {
+                    int length = (Model[i].Description.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i].Description.Length;
+                    <p class="summary"><h4>Description:</h4> @Model[i].Description.Substring(0, length) <text>...</text></p>
+                }
                 <p class="keywords">
-                    Keywords:
+                    <h4>Keywords:</h4>
                     @foreach (var k in Model[i].Keywords)
                     {
                         @:  @k
@@ -74,45 +54,7 @@
                         <img style="width:50%;" src="@Model[i+1].Poster" />
                     </a>
                 </p>
-                <p class="connected-information">
-                    @if (SignInManager.IsSignedIn(User))
-                    {
-                        @if (Model[i+1].gameDb.Collection)
-                        {
-                            <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
-                        }
-                        else
-                        {
-                            <a asp-action="AddGameCollection" asp-controller="Collection" asp-route-id="@Model[i+1].Id">
-                                <span class="glyphicon glyphicon-folder-open icon-pos" aria-hidden="true"></span>
-                            </a>
-
-                        }
-                        @if (Model[i+1].gameDb.Wishlist)
-                        {
-                            <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
-                        }
-                        else
-                        {
-                            <span class="glyphicon glyphicon-shopping-cart icon-pos" aria-hidden="true"></span>
-
-                        }
-                        @if (Model[i + 1].gameDb.Favorite)
-                        {
-                            <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
-                        }
-                        else
-                        {
-                            <span class="glyphicon glyphicon-heart icon-pos" aria-hidden="true"></span>
-                        }
-                    }
-                    else
-                    {
-                        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-                        <span class="info">Connect first to be able to add items</span>
-                    }
-                </p>
-
+                @await Html.PartialAsync("_AddCollectionHelper", Model[i+1])
             </div>
             <div class="information col-md-3 col">
                 <p class="title">@Model[i + 1].Title</p>
@@ -122,17 +64,52 @@
                         @: @k -  @Model[i + 1].ReleaseDate[k].ToString("d")
                         }
                 </p>
-                <p class="summary">Description: @Model[i + 1].Storyline</p>
+                @if (!string.IsNullOrEmpty(Model[i + 1].Storyline))
+                {
+                    int length = (Model[i + 1].Storyline.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i + 1].Storyline.Length;
+                    <p class="summary"><h4>Description:</h4> @Model[i + 1].Storyline.Substring(0, length) <text>...</text></p>
+                }
+                else if (!string.IsNullOrEmpty(Model[i + 1].Description))
+                {
+                    int length = (Model[i + 1].Description.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i + 1].Description.Length;
+                    <p class="summary"><h4>Description:</h4> @Model[i + 1].Description.Substring(0, length) <text>...</text></p>
+                }
                 <p class="keywords">
-                    Keywords:
+                    <h4>Keywords:</h4>
                     @foreach (var k in Model[i + 1].Keywords)
                     {
-                        @:  @k
-                        }
+                        @: @k
+                    }
                 </p>
             </div>
             }
             <!-- @Html.Raw(i % 2 == 0 ? "</div>" : "") -->
         </div>
 }
+</div>
+<div class="previous-next">
+    @{ 
+        int offset = (int)ViewData["offset"];
+        int count = (int)ViewData["count"];
+        int maxPages = (int)ViewData["MaxPages"];
+        int maxElements = (int)ViewData["MaxElements"];
+        int previous = (offset - maxElements < 0) ? offset = 0 : offset - maxElements;
+     }
+    @if (offset != 0)
+    {
+        @Html.ActionLink("First", "Games", "Collection", new { offset = 0 }, null);
+        @Html.ActionLink("Previous", "Games", "Collection", new { offset = previous }, null);
+        }
+
+        @for (int i = offset+maxElements, j=offset+1, k=0;i<(count/4) && k < maxPages;i+=maxElements, j++, k++)
+        {
+            @Html.ActionLink(j.ToString(), "Games", "Collection", new { offset = i }, null);
+            @Html.Raw(" ");
+        }
+
+        @if (count > 4 && offset * 4 < count)
+        {
+            @Html.ActionLink("Next", "Games", "Collection", new { offset = offset+maxElements }, null);
+            @Html.ActionLink("Last", "Games", "Collection", new { offset = count-4 }, null);
+        }
 </div>

@@ -22,8 +22,6 @@ namespace CollectionManager.Utils
 
         public List<Game> Mapping(JsonReader json, RestAPI restApi, GameContext context, ApplicationUser user)
         {
-            int counter=0;
-            int MaxCount = 4;
             List<Game> games = new List<Game>();
 
             // From json object we get the values to fill our object
@@ -96,15 +94,22 @@ namespace CollectionManager.Utils
                 }
                 
                 game.Poster = new Uri(string.Format("https://res.cloudinary.com/igdb/image/upload/t_{0}/{1}.jpg", "cover_big", (string)jElement.SelectToken("cover.cloudinary_id")));
-                List<string> pictures = jElement.SelectToken("screenshots").Select(s => (string)s.SelectToken("cloudinary_id")).ToList();
-                foreach (var p in pictures)
+                if (jElement.SelectToken("screenshots") != null)
                 {
-                    game.Pictures.Add(new Uri(string.Format("https://res.cloudinary.com/igdb/image/upload/t_{0}/{1}.jpg", "screenshot_med", p)));
+                    List<string> pictures = jElement.SelectToken("screenshots").Select(s => (string)s.SelectToken("cloudinary_id")).ToList();
+                    foreach (var p in pictures)
+                    {
+                        game.Pictures.Add(new Uri(string.Format("https://res.cloudinary.com/igdb/image/upload/t_{0}/{1}.jpg", "screenshot_med", p)));
+                    }
                 }
-                List<string> videos = jElement.SelectToken("videos").Select(s => (string)s.SelectToken("video_id")).ToList();
-                foreach (var v in videos)
+
+                if (jElement.SelectToken("videos") != null)
                 {
-                    game.Videos.Add(new Uri(string.Format("https://www.youtube.com/embed/{0}", v)));
+                    List<string> videos = jElement.SelectToken("videos").Select(s => (string)s.SelectToken("video_id")).ToList();
+                    foreach (var v in videos)
+                    {
+                        game.Videos.Add(new Uri(string.Format("https://www.youtube.com/embed/{0}", v)));
+                    }
                 }
 
                 //JArray nestJArray = (JArray)jElement.SelectToken("release_dates");
@@ -129,10 +134,6 @@ namespace CollectionManager.Utils
                     game.gameDb = new Models.DB.GameDbMapping();
 
                 games.Add(game);
-
-                if (counter == MaxCount)
-                    break;
-                counter++;
             }
 
             return games;

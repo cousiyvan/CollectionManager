@@ -6,45 +6,45 @@
     {
         if (Model.gameDb.Collection)
         {
-            <a asp-action="RemoveGameCollection" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
+            <a asp-action="AddRemoveGameCollection" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
                 <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
-                Remove game from collection
+                <s>Collection</s>
             </a>
         }
         else
         {
-            <a asp-action="AddGameCollection" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
+            <a asp-action="AddRemoveGameCollection" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
                 <span class="glyphicon glyphicon-folder-open icon-pos" aria-hidden="true"></span>
-                Add game to collection
+                Collection
             </a>
 
         }
         if (Model.gameDb.Wishlist)
         {
-            <a asp-action="RemoveGameWishlist" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
+            <a asp-action="AddRemoveGameWishlist" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
                 <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
-                Remove game from Wishlist
+                <s>Wishlist</s>
             </a>
         }
         else
         {
-            <a asp-action="AddGameWishlist" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
+            <a asp-action="AddRemoveGameWishlist" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
                 <span class="glyphicon glyphicon-shopping-cart icon-pos" aria-hidden="true"></span>
-                Add game to Wishlist
+                Wishlist
             </a>
         }
         if (Model.gameDb.Favorite)
         {
-            <a asp-action="RemoveGameFavorites" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
+            <a asp-action="AddRemoveGameFavorites" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
                 <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
-                Remove game from Favorites
+                <s>Favorites</s>
             </a>
         }
         else
         {
-            <a asp-action="AddGameFavorites" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
+            <a asp-action="AddRemoveGameFavorites" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
                 <span class="glyphicon glyphicon-heart icon-pos" aria-hidden="true"></span>
-                Add game to Favorites
+                Favorites
             </a>
         }
     }

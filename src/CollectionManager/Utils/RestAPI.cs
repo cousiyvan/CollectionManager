@@ -72,5 +72,17 @@ namespace CollectionManager.Utils
             }
             return jsonReader;
         }
+
+        public JToken GetSpecificValue(string call, string field)
+        {
+            this.Parameters = call;
+            JsonReader json = this.DoCall();
+
+            // From json object we get the values to fill our object
+            JToken token = JToken.Load(json);
+            // Values from first call
+
+            return token.SelectToken(field);
+        }
     }
 }

@@ -25,6 +25,16 @@ namespace CollectionManager.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
+        private readonly int MaxElements = 4;
+        private readonly int MaxPages = 5;
+        private readonly int SummaryMaxCharacters = 150;
+
+        private enum GameElement
+        {
+            Collection =0,
+            Wishlist,
+            Favorites
+        }
         #endregion
 
         #region Constructors
@@ -56,8 +66,9 @@ namespace CollectionManager.Controllers
         /// Controller to the Games view
         /// </summary>
         /// <returns>The view to be displayed</returns>
-        public IActionResult Games(int? id)
+        public IActionResult Games(int? id, int offset = 0)
         {
+            // init variables
             Uri gameApiRestUrl = null;
             string parameters = string.Empty;
             Dictionary<string, string> apiKey = new Dictionary<string, string>();
@@ -68,17 +79,26 @@ namespace CollectionManager.Controllers
             MapperGame mapper = new MapperGame();
             List<Game> games = null;
 
+            // init some ViewData values
+            ViewData["MaxPages"] = this.MaxPages;
+            ViewData["offset"] = offset;
+            ViewData["MaxElements"] = this.MaxElements;
+            ViewData["SummaryMaxCharacters"] = this.SummaryMaxCharacters;
+
             if (Uri.TryCreate(_appSettings.ServicesSettings.Game, UriKind.Absolute, out gameApiRestUrl))
             {
+                restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
+
                 if (id != null)
                 {
-                    parameters = $"games/{id}?fields=*&limit=10";
+                    parameters = $"games/{id}?fields=*&limit={this.MaxElements}&offset={offset}";
                 }
                 else
                 {
-                    parameters = "games/?fields=*&limit=10&offset=0&order=release_dates.date%3Adesc&search=zelda";
+                    JToken count = restApi.GetSpecificValue($"games/count", "count");
+                    ViewData["count"] = count.Value<int>();
+                    parameters = $"games/?fields=*&limit={MaxElements}&offset={offset}&order=release_dates.date%3Adesc";
                 }
-                restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
                 //json = restApi.DoCall();
 
                 //while (json.Read())
@@ -89,6 +109,7 @@ namespace CollectionManager.Controllers
                 //    }
                 //}
 
+                restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
                 json = restApi.DoCall();
                 ApplicationUser user = this.GetConnectedUser();
                 games = mapper.Mapping(json, restApi, _gameContext, user);
@@ -113,40 +134,28 @@ namespace CollectionManager.Controllers
             return view;
         }
 
-        public IActionResult AddGameCollection(int id)
+        public IActionResult AddRemoveGameCollection(int id)
         {
             ApplicationUser user = this.GetConnectedUser();
+            this.AddElement(GameElement.Collection, id, user);
+            
+            return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = ViewData["offset"] });
+        }
 
-            if (id == 0)
-                new ViewResult();
-            else
-            {
-                var objectExists = from gameDb in _gameContext.GameDbMapping
-                                   where gameDb.GameId == id
-                                   where gameDb.UserId == user.Id
-                                   select gameDb;
+        public IActionResult AddRemoveGameWishlist(int id)
+        {
+            ApplicationUser user = this.GetConnectedUser();
+            this.AddElement(GameElement.Wishlist, id, user);
 
-                if (objectExists.ToList().Count > 0)
-                {
-                    objectExists.ToList()[0].Collection = !objectExists.ToList()[0].Collection;
-                    this._gameContext.SaveChanges();
-                }
-                else
-                {
-                    GameDbMapping gameDbMapping = new GameDbMapping
-                    {
-                        Collection = true,
-                        Favorite = false,
-                        Wishlist = false,
-                        GameId = id,
-                        UserId = user.Id
-                    };
-                    this._gameContext.GameDbMapping.Add(gameDbMapping);
-                    this._gameContext.SaveChanges();
-                }
-            }
+            return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = ViewData["offset"] });
+        }
 
-            return RedirectToAction(nameof(CollectionController.Games), "Collection");
+        public IActionResult AddRemoveGameFavorites(int id)
+        {
+            ApplicationUser user = this.GetConnectedUser();
+            this.AddElement(GameElement.Favorites, id, user);
+
+            return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = ViewData["offset"] });
         }
 
         /// <summary>
@@ -203,6 +212,65 @@ namespace CollectionManager.Controllers
             }
 
             return user;
+        }
+
+        private void AddElement(GameElement gameElement, int id, ApplicationUser user)
+        {
+            if (id == 0)
+                new ViewResult();
+            else
+            {
+                var objectExists = from gameDb in _gameContext.GameDbMapping
+                                   where gameDb.GameId == id
+                                   where gameDb.UserId == user.Id
+                                   select gameDb;
+
+                if (objectExists.ToList().Count > 0)
+                {
+                    if (gameElement == GameElement.Collection)
+                        objectExists.ToList()[0].Collection = !objectExists.ToList()[0].Collection;
+                    else if (gameElement == GameElement.Favorites)
+                        objectExists.ToList()[0].Favorite= !objectExists.ToList()[0].Favorite;
+                    else if (gameElement == GameElement.Wishlist)
+                        objectExists.ToList()[0].Wishlist = !objectExists.ToList()[0].Wishlist;
+
+                    this._gameContext.SaveChanges();
+                }
+                else
+                {
+                    GameDbMapping gameDbMapping = new GameDbMapping();
+                    if (gameElement == GameElement.Collection)
+                        gameDbMapping = new GameDbMapping
+                        {
+                            Collection = true,
+                            Favorite = false,
+                            Wishlist = false,
+                            GameId = id,
+                            UserId = user.Id
+                        };
+                    else if (gameElement == GameElement.Favorites)
+                        gameDbMapping = new GameDbMapping
+                        {
+                            Collection = false,
+                            Favorite = true,
+                            Wishlist = false,
+                            GameId = id,
+                            UserId = user.Id
+                        };
+                    else if (gameElement == GameElement.Wishlist)
+                        gameDbMapping = new GameDbMapping
+                        {
+                            Collection = false,
+                            Favorite = false,
+                            Wishlist = true,
+                            GameId = id,
+                            UserId = user.Id
+                        };
+
+                    this._gameContext.GameDbMapping.Add(gameDbMapping);
+                    this._gameContext.SaveChanges();
+                }
+            }
         }
         #endregion
     }
