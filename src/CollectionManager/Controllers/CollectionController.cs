@@ -109,10 +109,17 @@ namespace CollectionManager.Controllers
                 //    }
                 //}
 
-                restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
-                json = restApi.DoCall();
-                ApplicationUser user = this.GetConnectedUser();
-                games = mapper.Mapping(json, restApi, _gameContext, user);
+                try
+                {
+                    restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
+                    json = restApi.DoCall();
+                    ApplicationUser user = this.GetConnectedUser();
+                    games = mapper.Mapping(json, restApi, _gameContext, user, _logger);
+                } catch (Exception exc)
+                {
+                    _logger.LogError($"Error during call: {exc.Message}");
+                    games = null;
+                }
             }
             if (games == null)
                 games = new List<Game>();

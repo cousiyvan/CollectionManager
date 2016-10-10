@@ -97,7 +97,7 @@
      }
     @if (offset != 0)
     {
-        @Html.ActionLink("First", "Games", "Collection", new { offset = 0 }, null);
+        @Html.ActionLink("First ", "Games", "Collection", new { offset = 0 }, null);
         @Html.ActionLink("Previous", "Games", "Collection", new { offset = previous }, null);
         }
 
@@ -110,6 +110,6 @@
         @if (count > 4 && offset * 4 < count)
         {
             @Html.ActionLink("Next", "Games", "Collection", new { offset = offset+maxElements }, null);
-            @Html.ActionLink("Last", "Games", "Collection", new { offset = count-4 }, null);
+            @*@Html.ActionLink(" Last", "Games", "Collection", new { offset = count-4 }, null);*@
         }
 </div>
