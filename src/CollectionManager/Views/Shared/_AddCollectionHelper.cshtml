@@ -6,7 +6,7 @@
     {
         if (Model.gameDb.Collection)
         {
-            <a asp-action="AddRemoveGameCollection" asp-controller="Collection" asp-route-id="@Model.Id" class="logged-icon">
+            <a asp-action="AddRemoveGameCollection" asp-controller="Collection" asp-route-id="@Model.Id" asp-route-offset='@ViewData["offset"]' asp-route-currentPage='@ViewData["CurrentPage"]' class="logged-icon">
                 <span class="glyphicon glyphicon-ok icon-pos" aria-hidden="true"></span>
                 <s>Collection</s>
             </a>

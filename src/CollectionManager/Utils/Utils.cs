@@ -1,4 +1,6 @@
-﻿using CollectionManager.Models.Collection;
+﻿using CollectionManager.Data;
+using CollectionManager.Models.Collection;
+using CollectionManager.Models.DB;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -8,9 +10,10 @@ using System.Threading.Tasks;
 
 namespace CollectionManager.Utils
 {
-    public static class Utils {
+    public static class Utils
+    {
         #region Properties
-        
+
         #endregion
         public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
         {
@@ -65,7 +68,7 @@ namespace CollectionManager.Utils
             if (ids.Count > 1)
             {
                 ids.ForEach(x => idSplitted += string.Format("{0},", x));
-                idSplitted = idSplitted.Remove(idSplitted.Length-1);
+                idSplitted = idSplitted.Remove(idSplitted.Length - 1);
             }
             else
                 ids.ForEach(x => idSplitted += string.Format("{0}", x));
@@ -82,6 +85,38 @@ namespace CollectionManager.Utils
             }
 
             return restOutput;
+        }
+
+        public static List<string> CheckDbContentExistence(Game.CallType callType, RestAPI restAPI, List<string> elements, GameContext gameContext)
+        {
+            List<string> values = new List<string>();
+            foreach (string element in elements)
+            {
+                var linqForMiscGameInformation = from info in gameContext.MiscGameInformation.ToList()
+                                                 where info.ExternalId == int.Parse(element) && info.Type == callType
+                                                 select info;
+
+                if (linqForMiscGameInformation.ToList().Count > 0)
+                {
+                    values.Add(linqForMiscGameInformation.First().Value);
+                }
+                else
+                {
+                    List<string> names = GetContent(restAPI, callType, new List<string>() { element });
+                    MiscGameInformation miscGameInformation = new MiscGameInformation()
+                    {
+                        ExternalId = int.Parse(element),
+                        Type = callType,
+                        Value = names[0]
+                    };
+                    gameContext.MiscGameInformation.Add(miscGameInformation);
+                    gameContext.SaveChanges();
+
+                    values.Add(names[0]);
+                }
+            }
+
+            return values;
         }
 
         public static List<T> ConvertFromIdToElement<T>(Dictionary<int, T> mappingTable, List<T> elements)

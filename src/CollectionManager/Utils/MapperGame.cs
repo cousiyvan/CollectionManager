@@ -44,7 +44,8 @@ namespace CollectionManager.Utils
                     if (jToken != null)
                     {
                         developers = jElement.SelectToken("developers").Select(s => (string)s).ToList<string>();
-                        game.Developers.AddRange(Utils.GetContent(restApi, Game.CallType.Companie, developers));
+                        developers = Utils.CheckDbContentExistence(Game.CallType.Companie, restApi, developers, context);
+                        game.Developers.AddRange(developers);
                     }
 
                     List<string> publishers = new List<string>();
@@ -52,7 +53,8 @@ namespace CollectionManager.Utils
                     if (jToken != null)
                     {
                         publishers = jElement.SelectToken("publishers").Select(s => (string)s).ToList<string>();
-                        game.Publishers.AddRange(Utils.GetContent(restApi, Game.CallType.Companie, publishers));
+                        publishers = Utils.CheckDbContentExistence(Game.CallType.Companie, restApi, publishers, context);
+                        game.Publishers.AddRange(publishers);
                     }
 
                     int category = (int)jElement.SelectToken("category");
@@ -62,7 +64,8 @@ namespace CollectionManager.Utils
                     if (jToken != null)
                     {
                         gameModes = jElement.SelectToken("game_modes").Select(s => (string)s).ToList<string>();
-                        game.GameModes.AddRange(Utils.GetContent(restApi, Game.CallType.GameModes, gameModes));
+                        gameModes = Utils.CheckDbContentExistence(Game.CallType.GameModes, restApi, gameModes, context);
+                        game.GameModes.AddRange(gameModes);
                     }
 
                     List<string> keywords = new List<string>();
@@ -70,7 +73,8 @@ namespace CollectionManager.Utils
                     if (jToken != null)
                     {
                         keywords = jElement.SelectToken("keywords").Select(s => (string)s).ToList<string>();
-                        game.Keywords.AddRange(Utils.GetContent(restApi, Game.CallType.Keyword, keywords));
+                        keywords = Utils.CheckDbContentExistence(Game.CallType.Keyword, restApi, keywords, context);
+                        game.Keywords.AddRange(keywords);
                     }
 
                     List<string> themes = new List<string>();
@@ -78,7 +82,8 @@ namespace CollectionManager.Utils
                     if (jToken != null)
                     {
                         themes = jElement.SelectToken("themes").Select(s => (string)s).ToList<string>();
-                        game.Themes.AddRange(Utils.GetContent(restApi, Game.CallType.Theme, themes));
+                        themes = Utils.CheckDbContentExistence(Game.CallType.Theme, restApi, themes, context);
+                        game.Themes.AddRange(themes);
                     }
 
                     List<string> genres = new List<string>();
@@ -86,7 +91,8 @@ namespace CollectionManager.Utils
                     if (jToken != null)
                     {
                         genres = jElement.SelectToken("genres").Select(s => (string)s).ToList<string>();
-                        game.Genres.AddRange(Utils.GetContent(restApi, Game.CallType.Genres, genres));
+                        genres = Utils.CheckDbContentExistence(Game.CallType.Genres, restApi, genres, context);
+                        game.Genres.AddRange(genres);
                     }
 
                     foreach (var token in jElement.SelectTokens("release_dates"))

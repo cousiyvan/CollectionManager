@@ -26,6 +26,15 @@ namespace CollectionManager.Models
             {
                 gameContext.GameDbMapping.Add(gameDb);
             }
+
+            var miscGameInformations = new MiscGameInformation[]
+            {
+                new MiscGameInformation { ExternalId = 1, Type = Collection.Game.CallType.Companie, Value = "test" }
+            };
+            foreach (MiscGameInformation miscInfo in miscGameInformations)
+            {
+                gameContext.MiscGameInformation.Add(miscInfo);
+            }
             gameContext.SaveChanges();
         }
     }

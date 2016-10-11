@@ -66,7 +66,7 @@ namespace CollectionManager.Controllers
         /// Controller to the Games view
         /// </summary>
         /// <returns>The view to be displayed</returns>
-        public IActionResult Games(int? id, int offset = 0)
+        public IActionResult Games(int? id, int offset = 0, int currentPage = 0)
         {
             // init variables
             Uri gameApiRestUrl = null;
@@ -82,6 +82,7 @@ namespace CollectionManager.Controllers
             // init some ViewData values
             ViewData["MaxPages"] = this.MaxPages;
             ViewData["offset"] = offset;
+            ViewData["CurrentPage"] = currentPage;
             ViewData["MaxElements"] = this.MaxElements;
             ViewData["SummaryMaxCharacters"] = this.SummaryMaxCharacters;
 
@@ -115,6 +116,26 @@ namespace CollectionManager.Controllers
                     json = restApi.DoCall();
                     ApplicationUser user = this.GetConnectedUser();
                     games = mapper.Mapping(json, restApi, _gameContext, user, _logger);
+
+                    // We get user data if he is connected
+                    if (user != null)
+                    {
+                        var linqUserGames = from g in _gameContext.GameDbMapping.ToList()
+                                        where user.Id == g.UserId
+                                        select g;
+                        string gamesId = string.Empty;
+                        foreach (var userGame in linqUserGames)
+                        {
+                            gamesId += (userGame.Collection) ? $"{userGame.GameId.ToString()}," : string.Empty;
+                        }
+
+                        if (!string.IsNullOrEmpty(gamesId))
+                        {
+                            restApi.Parameters = $"games/{gamesId.Substring(0, gamesId.Length-1)}?fields=*&limit={MaxElements}&offset={offset}&order=release_dates.date%3Adesc";
+                            json = restApi.DoCall();
+                            ViewData["MyCollectionGames"] = mapper.Mapping(json, restApi, _gameContext, user, _logger);
+                        }
+                    }
                 } catch (Exception exc)
                 {
                     _logger.LogError($"Error during call: {exc.Message}");
@@ -141,28 +162,28 @@ namespace CollectionManager.Controllers
             return view;
         }
 
-        public IActionResult AddRemoveGameCollection(int id)
+        public IActionResult AddRemoveGameCollection(int id, int offset = 0, int currentPage = 0)
         {
             ApplicationUser user = this.GetConnectedUser();
             this.AddElement(GameElement.Collection, id, user);
-            
-            return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = ViewData["offset"] });
+
+            return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = offset, currentPage = currentPage });
         }
 
-        public IActionResult AddRemoveGameWishlist(int id)
+        public IActionResult AddRemoveGameWishlist(int id, int offset = 0, int currentPage = 0)
         {
             ApplicationUser user = this.GetConnectedUser();
             this.AddElement(GameElement.Wishlist, id, user);
 
-            return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = ViewData["offset"] });
+            return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = offset, currentPage = currentPage });
         }
 
-        public IActionResult AddRemoveGameFavorites(int id)
+        public IActionResult AddRemoveGameFavorites(int id, int offset = 0, int currentPage = 0)
         {
             ApplicationUser user = this.GetConnectedUser();
             this.AddElement(GameElement.Favorites, id, user);
 
-            return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = ViewData["offset"] });
+            return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = offset, currentPage = currentPage });
         }
 
         /// <summary>

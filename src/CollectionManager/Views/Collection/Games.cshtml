@@ -5,12 +5,18 @@
     ViewData["Title"] = "Games";
 }
 
-<h2>Games</h2>
+@if (SignInManager.IsSignedIn(User))
+{
+    <h2>My collection</h2>
+    @Html.Raw(Json.Serialize(ViewData["MyCollectionGames"]));
+}
+
+<h2>Latest releases</h2>
 <div class="container-fluid">
     @for (var i = 0; i < Model.Count; i+=2)
     {
         <!-- @Html.Raw(i % 2 == 0 ? "<div class='row'>": "") -->
-        <div class="row">
+        <div class="row custom-row">
             <div class="poster col-md-3 col">
                 <p>
                     <a asp-action="Games" asp-controller="Collection" asp-route-id="@Model[i].Id">
@@ -93,23 +99,27 @@
         int count = (int)ViewData["count"];
         int maxPages = (int)ViewData["MaxPages"];
         int maxElements = (int)ViewData["MaxElements"];
+        int currentPage = 0;
+        if (ViewData["CurrentPage"] != null) {
+            currentPage = (int)ViewData["CurrentPage"];
+        }
         int previous = (offset - maxElements < 0) ? offset = 0 : offset - maxElements;
-     }
+    }
     @if (offset != 0)
     {
         @Html.ActionLink("First ", "Games", "Collection", new { offset = 0 }, null);
-        @Html.ActionLink("Previous", "Games", "Collection", new { offset = previous }, null);
+        @Html.ActionLink("Previous", "Games", "Collection", new { offset = previous, currentPage = currentPage - 1 }, null);
         }
 
-        @for (int i = offset+maxElements, j=offset+1, k=0;i<(count/4) && k < maxPages;i+=maxElements, j++, k++)
+        @for (int i = offset+maxElements, j=currentPage+1, k=0;i<(count/4) && k < maxPages;i+=maxElements, j++, k++)
         {
-            @Html.ActionLink(j.ToString(), "Games", "Collection", new { offset = i }, null);
+            @Html.ActionLink(j.ToString(), "Games", "Collection", new { offset = i, currentPage = j }, null);
             @Html.Raw(" ");
         }
 
         @if (count > 4 && offset * 4 < count)
         {
-            @Html.ActionLink("Next", "Games", "Collection", new { offset = offset+maxElements }, null);
+            @Html.ActionLink("Next", "Games", "Collection", new { offset = offset+maxElements, currentPage = currentPage + 1 }, null);
             @*@Html.ActionLink(" Last", "Games", "Collection", new { offset = count-4 }, null);*@
         }
 </div>

@@ -15,10 +15,11 @@ namespace CollectionManager.Data
         }
 
         public DbSet<GameDbMapping> GameDbMapping { get; set; }
-
+        public DbSet<MiscGameInformation> MiscGameInformation { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<GameDbMapping>().ToTable("GameDbMapping");
+            modelBuilder.Entity<MiscGameInformation>().ToTable("MiscGameInformation");
         }
     }
 }
