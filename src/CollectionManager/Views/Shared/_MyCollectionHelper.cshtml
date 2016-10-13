@@ -1,0 +1,43 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<div class="row custom-row">
+@foreach (Game g in ViewData["MyCollectionGames"])
+    <div class="poster col-md-3 col">
+        <pMyCollectionGames
+            <a asp-action="Games" asp-controller="Collection" asp-route-id="@ViewData["MyCollectionGames"].Id">
+                <img style="width:50%;" src="@Model.Poster" />
+            </a>
+        </p>
+        @await Html.Partial("_AddCollectionHelper", Model)
+    </div>
+    <div class="information col-md-3 col">
+        <p class="title">@Model.Title</p>
+        <p class="release-date">
+            @foreach (var k in Model.ReleaseDate.Keys)
+            {
+                @: @k -  @Model.ReleaseDate[k].ToString("d")
+                        }
+        </p>
+        @if (!string.IsNullOrEmpty(Model.Storyline))
+        {
+            int length = (Model.Storyline.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model.Storyline.Length;
+            <p class="summary"><h4>Description:</h4> @Model.Storyline.Substring(0, length) <text>...</text></p>
+        }
+        else if (!string.IsNullOrEmpty(Model.Description))
+        {
+            int length = (Model.Description.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model.Description.Length;
+            <p class="summary"><h4>Description:</h4> @Model.Description.Substring(0, length) <text>...</text></p>
+        }
+        <p class="keywords">
+            <h4>Keywords:</h4>
+            @foreach (var k in Model.Keywords)
+            {
+                @:  @k
+                        }
+        </p>
+    </div>
+</div>
