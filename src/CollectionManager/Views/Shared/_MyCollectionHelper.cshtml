@@ -1,43 +1,46 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@using CollectionManager.Models.Collection;
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+@{
+//List<Game> Model = (List<Game>)ViewData["MyCollectionGames"];
+}
 
 <div class="row custom-row">
-@foreach (Game g in ViewData["MyCollectionGames"])
+    @for (int i = 0; i < Model.Count(); i++)
+    {
     <div class="poster col-md-3 col">
-        <pMyCollectionGames
-            <a asp-action="Games" asp-controller="Collection" asp-route-id="@ViewData["MyCollectionGames"].Id">
-                <img style="width:50%;" src="@Model.Poster" />
-            </a>
-        </p>
-        @await Html.Partial("_AddCollectionHelper", Model)
+        <a asp-action="Games" asp-controller="Collection" asp-route-id="@Model[i].Id">
+            <img style="width:50%;" src="@Model[i].Poster" />
+        </a>
     </div>
     <div class="information col-md-3 col">
-        <p class="title">@Model.Title</p>
+        <p class="title">@Model[i].Title</p>
         <p class="release-date">
-            @foreach (var k in Model.ReleaseDate.Keys)
+            @foreach (var k in Model[i].ReleaseDate.Keys)
             {
-                @: @k -  @Model.ReleaseDate[k].ToString("d")
-                        }
+            @: @k -  @Model[i].ReleaseDate[k].ToString("d")
+            }
         </p>
-        @if (!string.IsNullOrEmpty(Model.Storyline))
+        @if (!string.IsNullOrEmpty(Model[i].Storyline))
         {
-            int length = (Model.Storyline.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model.Storyline.Length;
-            <p class="summary"><h4>Description:</h4> @Model.Storyline.Substring(0, length) <text>...</text></p>
+        int length = (Model[i].Storyline.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i].Storyline.Length;
+        <p class="summary"><h4>Description:</h4> @Model[i].Storyline.Substring(0, length) <text>...</text></p>
         }
-        else if (!string.IsNullOrEmpty(Model.Description))
+        else if (!string.IsNullOrEmpty(Model[i].Description))
         {
-            int length = (Model.Description.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model.Description.Length;
-            <p class="summary"><h4>Description:</h4> @Model.Description.Substring(0, length) <text>...</text></p>
+        int length = (Model[i].Description.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i].Description.Length;
+        <p class="summary"><h4>Description:</h4> @Model[i].Description.Substring(0, length) <text>...</text></p>
         }
         <p class="keywords">
             <h4>Keywords:</h4>
-            @foreach (var k in Model.Keywords)
+            @foreach (var k in Model[i].Keywords)
             {
-                @:  @k
-                        }
+            @:  @k
+            }
         </p>
     </div>
+    }
 </div>

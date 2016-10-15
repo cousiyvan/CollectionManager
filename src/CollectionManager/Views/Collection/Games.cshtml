@@ -1,4 +1,5 @@
 @model List<CollectionManager.Models.Collection.Game>
+@using CollectionManager.Models.Collection;
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 @{
@@ -7,8 +8,13 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
-    <h2>My collection</h2>
-    @Html.Raw(Json.Serialize(ViewData["MyCollectionGames"]));
+    @if (ViewData["MyCollectionGames"] != null)
+    {
+        List<Game> myGames = (List<Game>)ViewData["MyCollectionGames"];
+        <h2>My collection</h2>
+        @*@Html.Raw(Json.Serialize(ViewData["MyCollectionGames"]));*@
+        @await Html.PartialAsync("_MyCollectionHelper", myGames)
+    }
 }
 
 <h2>Latest releases</h2>
