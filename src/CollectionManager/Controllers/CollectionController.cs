@@ -31,7 +31,7 @@ namespace CollectionManager.Controllers
 
         private enum GameElement
         {
-            Collection =0,
+            Collection = 0,
             Wishlist,
             Favorites
         }
@@ -39,10 +39,10 @@ namespace CollectionManager.Controllers
 
         #region Constructors
         public CollectionController(
-            IOptions<AppSettings> appSettings, 
-            GameContext gameContext, 
-            UserManager<ApplicationUser> userManager, 
-            SignInManager<ApplicationUser> signInManager, 
+            IOptions<AppSettings> appSettings,
+            GameContext gameContext,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             ILoggerFactory loggerFactory)
         {
             _appSettings = appSettings.Value;
@@ -121,22 +121,39 @@ namespace CollectionManager.Controllers
                     if (user != null)
                     {
                         var linqUserGames = from g in _gameContext.GameDbMapping.ToList()
-                                        where user.Id == g.UserId
-                                        select g;
-                        string gamesId = string.Empty;
+                                            where user.Id == g.UserId
+                                            select g;
+                        string collectionId = string.Empty, wishlistId = string.Empty, favoritesId = string.Empty;
                         foreach (var userGame in linqUserGames)
                         {
-                            gamesId += (userGame.Collection) ? $"{userGame.GameId.ToString()}," : string.Empty;
+                            collectionId += (userGame.Collection) ? $"{userGame.GameId.ToString()}," : string.Empty;
+                            wishlistId += (userGame.Wishlist) ? $"{userGame.GameId.ToString()}," : string.Empty;
+                            favoritesId += (userGame.Favorite) ? $"{userGame.GameId.ToString()}," : string.Empty;
                         }
 
-                        if (!string.IsNullOrEmpty(gamesId))
+                        if (!string.IsNullOrEmpty(collectionId))
                         {
-                            restApi.Parameters = $"games/{gamesId.Substring(0, gamesId.Length-1)}?fields=*&limit={MaxElements}&offset={offset}&order=release_dates.date%3Adesc";
+                            restApi.Parameters = $"games/{collectionId.Substring(0, collectionId.Length - 1)}?fields=*&limit={MaxElements}&offset={offset}&order=release_dates.date%3Adesc";
                             json = restApi.DoCall();
                             ViewData["MyCollectionGames"] = mapper.Mapping(json, restApi, _gameContext, user, _logger);
                         }
+
+                        if (!string.IsNullOrEmpty(wishlistId))
+                        {
+                            restApi.Parameters = $"games/{wishlistId.Substring(0, wishlistId.Length - 1)}?fields=*&limit={MaxElements}&offset={offset}&order=release_dates.date%3Adesc";
+                            json = restApi.DoCall();
+                            ViewData["MyWishlistGames"] = mapper.Mapping(json, restApi, _gameContext, user, _logger);
+                        }
+
+                        if (!string.IsNullOrEmpty(favoritesId))
+                        {
+                            restApi.Parameters = $"games/{favoritesId.Substring(0, favoritesId.Length - 1)}?fields=*&limit={MaxElements}&offset={offset}&order=release_dates.date%3Adesc";
+                            json = restApi.DoCall();
+                            ViewData["MyFavoritesGames"] = mapper.Mapping(json, restApi, _gameContext, user, _logger);
+                        }
                     }
-                } catch (Exception exc)
+                }
+                catch (Exception exc)
                 {
                     _logger.LogError($"Error during call: {exc.Message}");
                     games = null;
@@ -148,7 +165,7 @@ namespace CollectionManager.Controllers
             ViewResult view = null;
             if (games.Count > 1)
             {
-                 view = View(games);
+                view = View(games);
             }
             else if (games.Count == 1)
             {
@@ -258,7 +275,7 @@ namespace CollectionManager.Controllers
                     if (gameElement == GameElement.Collection)
                         objectExists.ToList()[0].Collection = !objectExists.ToList()[0].Collection;
                     else if (gameElement == GameElement.Favorites)
-                        objectExists.ToList()[0].Favorite= !objectExists.ToList()[0].Favorite;
+                        objectExists.ToList()[0].Favorite = !objectExists.ToList()[0].Favorite;
                     else if (gameElement == GameElement.Wishlist)
                         objectExists.ToList()[0].Wishlist = !objectExists.ToList()[0].Wishlist;
 

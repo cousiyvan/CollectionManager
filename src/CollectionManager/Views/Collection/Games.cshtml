@@ -11,9 +11,27 @@
     @if (ViewData["MyCollectionGames"] != null)
     {
         List<Game> myGames = (List<Game>)ViewData["MyCollectionGames"];
-        <h2>My collection</h2>
+        List<Game> myWishlist = (List<Game>)ViewData["MyWishlistGames"];
+        List<Game> myFavorites = (List<Game>)ViewData["MyFavoritesGames"];
+        
         @*@Html.Raw(Json.Serialize(ViewData["MyCollectionGames"]));*@
-        @await Html.PartialAsync("_MyCollectionHelper", myGames)
+        @if (myGames != null && myGames.Count > 0)
+        {
+            <h2>My Collection</h2>
+            @await Html.PartialAsync("_MyCollectionHelper", myGames)
+        }
+
+        @if (myWishlist != null && myWishlist.Count > 0)
+        {
+            <h2>My Wishlist</h2>
+            @await Html.PartialAsync("_MyCollectionHelper", myWishlist)
+        }
+
+        @if (myFavorites != null && myFavorites.Count > 0)
+        {
+            <h2>My Favorites</h2>
+            @await Html.PartialAsync("_MyCollectionHelper", myFavorites)
+        }
     }
 }
 

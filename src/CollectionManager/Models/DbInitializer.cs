@@ -14,8 +14,8 @@ namespace CollectionManager.Models
             // gameContext.Database.EnsureDeleted();
             gameContext.Database.EnsureCreated();
 
-            if (gameContext.GameDbMapping.Any())
-                gameContext.RemoveRange(gameContext.GameDbMapping.Select(x => x));
+            // if (gameContext.GameDbMapping.Any())
+            //    gameContext.RemoveRange(gameContext.GameDbMapping.Select(x => x));
 
             var gameDbMappings = new GameDbMapping[]
             {
