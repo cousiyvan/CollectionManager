@@ -1,4 +1,5 @@
-﻿.col{
+﻿/* Games styles */
+.col{
     padding:0;
 }
 .poster{
@@ -32,4 +33,12 @@
 
 .custom-row{
     padding-bottom: 40px;
+}
+
+/* Overall styles */
+.wip {
+    text-align:center;
+}
+.wip img {
+    width:10%
 }

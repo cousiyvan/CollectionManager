@@ -9,7 +9,7 @@
 }
 
 <div class="row custom-row">
-    @for (int i = 0; i < Model.Count(); i++)
+    @for (int i = 0; i < Model.Count; i++)
     {
     <div class="poster col-md-3 col">
         <a asp-action="Games" asp-controller="Collection" asp-route-id="@Model[i].Id">
