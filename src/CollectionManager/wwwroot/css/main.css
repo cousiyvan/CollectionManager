@@ -35,6 +35,14 @@
     padding-bottom: 40px;
 }
 
+.MyCollectionGamesContainer, .MyWishlistGamesContainer, .MyFavoritesGamesContainer {
+    display:none;
+}
+
+.myNavs {
+    margin: 10px;
+}
+
 /* Overall styles */
 .wip {
     text-align:center;

@@ -28,6 +28,10 @@ namespace CollectionManager.Controllers
         private readonly int MaxElements = 4;
         private readonly int MaxPages = 5;
         private readonly int SummaryMaxCharacters = 150;
+        private readonly string AlertSuccessClass = "alert alert-success";
+        private readonly string AlertWarningClass = "alert alert-warning";
+        private readonly string AlertInfoClass = "alert alert-info";
+        private readonly string AlertErrorClass = "alert alert-danger";
 
         private enum GameElement
         {
@@ -156,6 +160,8 @@ namespace CollectionManager.Controllers
                 catch (Exception exc)
                 {
                     _logger.LogError($"Error during call: {exc.Message}");
+                    ViewData["AlertMessage"] = $"Error during process: {exc.Message}";
+                    ViewData["AlertClass"] = this.AlertErrorClass;
                     games = null;
                 }
             }
@@ -176,13 +182,26 @@ namespace CollectionManager.Controllers
                 view = new ViewResult();
             }
 
+            if (!string.IsNullOrEmpty((string)TempData["AlertMessage"]))
+            {
+                ViewData["AlertMessage"] = (string)TempData["AlertMessage"];
+                ViewData["AlertClass"] = (string)TempData["AlertClass"];
+
+                TempData["AlertMessage"] = null;
+                TempData["AlertClass"] = null;
+            }
+
             return view;
         }
 
         public IActionResult AddRemoveGameCollection(int id, int offset = 0, int currentPage = 0)
         {
             ApplicationUser user = this.GetConnectedUser();
-            this.AddElement(GameElement.Collection, id, user);
+            bool added = this.AddElement(GameElement.Collection, id, user);
+
+            string resultString = added ? "added" : "removed";
+            TempData["AlertMessage"] = $"Game {resultString} to collection";
+            TempData["AlertClass"] = this.AlertSuccessClass;
 
             return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = offset, currentPage = currentPage });
         }
@@ -190,7 +209,11 @@ namespace CollectionManager.Controllers
         public IActionResult AddRemoveGameWishlist(int id, int offset = 0, int currentPage = 0)
         {
             ApplicationUser user = this.GetConnectedUser();
-            this.AddElement(GameElement.Wishlist, id, user);
+            bool added =this.AddElement(GameElement.Wishlist, id, user);
+
+            string resultString = added ? "added" : "removed";
+            TempData["AlertMessage"] = $"Game {resultString} to wishlist";
+            TempData["AlertClass"] = this.AlertSuccessClass;
 
             return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = offset, currentPage = currentPage });
         }
@@ -198,7 +221,11 @@ namespace CollectionManager.Controllers
         public IActionResult AddRemoveGameFavorites(int id, int offset = 0, int currentPage = 0)
         {
             ApplicationUser user = this.GetConnectedUser();
-            this.AddElement(GameElement.Favorites, id, user);
+            bool added = this.AddElement(GameElement.Favorites, id, user);
+
+            string resultString = added ? "added" : "removed";
+            TempData["AlertMessage"] = $"Game {resultString} to favorites";
+            TempData["AlertClass"] = this.AlertSuccessClass;
 
             return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = offset, currentPage = currentPage });
         }
@@ -259,8 +286,9 @@ namespace CollectionManager.Controllers
             return user;
         }
 
-        private void AddElement(GameElement gameElement, int id, ApplicationUser user)
+        private bool AddElement(GameElement gameElement, int id, ApplicationUser user)
         {
+            bool added = false;
             if (id == 0)
                 new ViewResult();
             else
@@ -273,12 +301,20 @@ namespace CollectionManager.Controllers
                 if (objectExists.ToList().Count > 0)
                 {
                     if (gameElement == GameElement.Collection)
+                    {
                         objectExists.ToList()[0].Collection = !objectExists.ToList()[0].Collection;
+                        added = objectExists.ToList()[0].Collection;
+                    }
                     else if (gameElement == GameElement.Favorites)
+                    {
                         objectExists.ToList()[0].Favorite = !objectExists.ToList()[0].Favorite;
+                        added = objectExists.ToList()[0].Favorite;
+                    }
                     else if (gameElement == GameElement.Wishlist)
+                    {
                         objectExists.ToList()[0].Wishlist = !objectExists.ToList()[0].Wishlist;
-
+                        added = objectExists.ToList()[0].Wishlist;
+                    }
                     this._gameContext.SaveChanges();
                 }
                 else
@@ -311,11 +347,13 @@ namespace CollectionManager.Controllers
                             GameId = id,
                             UserId = user.Id
                         };
+                    added = true;
 
                     this._gameContext.GameDbMapping.Add(gameDbMapping);
                     this._gameContext.SaveChanges();
                 }
             }
+            return added;
         }
         #endregion
     }

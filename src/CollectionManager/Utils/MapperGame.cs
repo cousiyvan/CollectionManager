@@ -102,13 +102,19 @@ namespace CollectionManager.Utils
                         game.ReleaseDate.Add(platform, Utils.UnixTimeStampToDateTime((double)token.Children()["date"].ToList()[0]));
                     }
 
-                    game.Poster = new Uri(string.Format("https://res.cloudinary.com/igdb/image/upload/t_{0}/{1}.jpg", "cover_big", (string)jElement.SelectToken("cover.cloudinary_id")));
+                    if (!string.IsNullOrEmpty((string)jElement.SelectToken("cover.cloudinary_id")))
+                        game.Poster = new Uri(string.Format("https://res.cloudinary.com/igdb/image/upload/t_{0}/{1}.jpg", "cover_big", (string)jElement.SelectToken("cover.cloudinary_id")));
+                    else
+                        game.Poster = new Uri("/images/NotAvailable.png", UriKind.Relative);
                     if (jElement.SelectToken("screenshots") != null)
                     {
                         List<string> pictures = jElement.SelectToken("screenshots").Select(s => (string)s.SelectToken("cloudinary_id")).ToList();
                         foreach (var p in pictures)
                         {
-                            game.Pictures.Add(new Uri(string.Format("https://res.cloudinary.com/igdb/image/upload/t_{0}/{1}.jpg", "screenshot_med", p)));
+                            if (!string.IsNullOrEmpty(p))
+                                game.Pictures.Add(new Uri(string.Format("https://res.cloudinary.com/igdb/image/upload/t_{0}/{1}.jpg", "screenshot_med", p)));
+                            else
+                                game.Pictures.Add(new Uri("/images/NotAvailable.png", UriKind.Relative));
                         }
                     }
 

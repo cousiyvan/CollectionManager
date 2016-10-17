@@ -57,6 +57,7 @@ namespace CollectionManager
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddSession();
             services.AddMvc();
 
             // Add application services.
@@ -91,6 +92,7 @@ namespace CollectionManager
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
 
+            app.UseSession();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

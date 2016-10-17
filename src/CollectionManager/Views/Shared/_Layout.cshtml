@@ -43,6 +43,13 @@
         </div>
     </div>
     <div class="container body-content">
+        @if (!string.IsNullOrEmpty((string)ViewData["AlertMessage"]))
+        {
+        <div class="@ViewData["AlertClass"] alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            @ViewData["AlertMessage"]
+        </div>
+        }
         @RenderBody()
         <hr />
         <footer>

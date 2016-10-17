@@ -6,44 +6,73 @@
     ViewData["Title"] = "Games";
 }
 
+<ul class="nav nav-pills myNavs">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        @if (ViewData["MyCollectionGames"] != null)
+        {
+            <li role="presentation" class="GamesMenuItems" id="MyCollection"><a href="#">My Collection</a></li>
+        }
+        @if (ViewData["MyWishlistGames"] != null)
+        {
+            <li role="presentation" class="GamesMenuItems" id="MyWishlist"><a href="#">My Wishlist</a></li>
+        }
+        @if (ViewData["MyFavoritesGames"] != null)
+        {
+            <li role="presentation" class="GamesMenuItems" id="MyFavorites"><a href="#">My Favorites</a></li>
+        }
+    }
+    <li role="presentation" id="LatestReleases" class="GamesMenuItems active"><a href="#">Latest Releases</a></li>
+</ul>
+
 @if (SignInManager.IsSignedIn(User))
 {
-    @if (ViewData["MyCollectionGames"] != null)
+    @if (ViewData["MyCollectionGames"] != null || ViewData["MyWishlistGames"] != null || ViewData["MyFavoritesGames"] != null)
     {
         List<Game> myGames = (List<Game>)ViewData["MyCollectionGames"];
         List<Game> myWishlist = (List<Game>)ViewData["MyWishlistGames"];
         List<Game> myFavorites = (List<Game>)ViewData["MyFavoritesGames"];
-        
+
         @*@Html.Raw(Json.Serialize(ViewData["MyCollectionGames"]));*@
         @if (myGames != null && myGames.Count > 0)
         {
-            <h2>My Collection</h2>
-            @await Html.PartialAsync("_MyCollectionHelper", myGames)
+            <div class="MyCollectionGamesContainer">
+                <h2>My Collection</h2>
+                @await Html.PartialAsync("_MyCollectionHelper", myGames)
+            </div>
         }
 
         @if (myWishlist != null && myWishlist.Count > 0)
         {
-            <h2>My Wishlist</h2>
-            @await Html.PartialAsync("_MyCollectionHelper", myWishlist)
+            <div class="MyWishlistGamesContainer">
+                <h2>My Wishlist</h2>
+                @await Html.PartialAsync("_MyCollectionHelper", myWishlist)
+            </div>
         }
 
         @if (myFavorites != null && myFavorites.Count > 0)
         {
-            <h2>My Favorites</h2>
-            @await Html.PartialAsync("_MyCollectionHelper", myFavorites)
+            <div class="MyFavoritesGamesContainer">
+                <h2>My Favorites</h2>
+                @await Html.PartialAsync("_MyCollectionHelper", myFavorites)
+            </div>
         }
     }
 }
 
-<h2>Latest releases</h2>
-<div class="container-fluid">
-    @for (var i = 0; i < Model.Count; i+=2)
-    {
+<div class="MyLatestReleasesGamesContainer">
+    <h2>Latest releases</h2>
+    <div class="container-fluid">
+
+
+
+        @for (var i = 0; i < Model.Count; i += 2)
+        {
         <!-- @Html.Raw(i % 2 == 0 ? "<div class='row'>": "") -->
         <div class="row custom-row">
-            <div class="poster col-md-3 col">
+            <div class="poster col-md-3 col col-xs-6">
                 <p>
-                    <a asp-action="Games" asp-controller="Collection" asp-route-id="@Model[i].Id">
+                    <a asp-action="Games" asp-controller="Collection" asp-route-id="@Model[i].Id" class="thumbnail">
                         <img style="width:50%;" src="@Model[i].Poster" />
                     </a>
                 </p>
@@ -53,13 +82,13 @@
                 <p class="title">@Model[i].Title</p>
                 <p class="release-date">
                     @foreach (var k in Model[i].ReleaseDate.Keys)
-                    {
+                {
                         @: @k -  @Model[i].ReleaseDate[k].ToString("d")
                         }
                 </p>
                 @if (!string.IsNullOrEmpty(Model[i].Storyline))
                 {
-                    int length = (Model[i].Storyline.Length > (int)ViewData["SummaryMaxCharacters"])? (int)ViewData["SummaryMaxCharacters"]:Model[i].Storyline.Length;
+                    int length = (Model[i].Storyline.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i].Storyline.Length;
                     <p class="summary"><h4>Description:</h4> @Model[i].Storyline.Substring(0, length) <text>...</text></p>
                 }
                 else if (!string.IsNullOrEmpty(Model[i].Description))
@@ -70,80 +99,104 @@
                 <p class="keywords">
                     <h4>Keywords:</h4>
                     @foreach (var k in Model[i].Keywords)
-                    {
+                {
                         @:  @k
                         }
                 </p>
             </div>
 
-            @if ((i+1) < Model.Count)
-            {
-            <div class="poster col-md-3 col">
-                <p>
-                    <a asp-action="Games" asp-controller="Collection" asp-route-id="@Model[i+1].Id">
-                        <img style="width:50%;" src="@Model[i+1].Poster" />
-                    </a>
-                </p>
-                @await Html.PartialAsync("_AddCollectionHelper", Model[i+1])
-            </div>
-            <div class="information col-md-3 col">
-                <p class="title">@Model[i + 1].Title</p>
-                <p class="release-date">
-                    @foreach (var k in Model[i + 1].ReleaseDate.Keys)
+            @if ((i + 1) < Model.Count)
+                {
+                <div class="poster col-md-3 col">
+                    <p>
+                        <a asp-action="Games" asp-controller="Collection" asp-route-id="@Model[i+1].Id" class="thumbnail">
+                            <img style="width:50%;" src="@Model[i+1].Poster" />
+                        </a>
+                    </p>
+                    @await Html.PartialAsync("_AddCollectionHelper", Model[i + 1])
+                </div>
+                    <div class="information col-md-3 col">
+                        <p class="title">@Model[i + 1].Title</p>
+                        <p class="release-date">
+                            @foreach (var k in Model[i + 1].ReleaseDate.Keys)
                     {
-                        @: @k -  @Model[i + 1].ReleaseDate[k].ToString("d")
+                                @: @k -  @Model[i + 1].ReleaseDate[k].ToString("d")
                         }
-                </p>
-                @if (!string.IsNullOrEmpty(Model[i + 1].Storyline))
-                {
-                    int length = (Model[i + 1].Storyline.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i + 1].Storyline.Length;
-                    <p class="summary"><h4>Description:</h4> @Model[i + 1].Storyline.Substring(0, length) <text>...</text></p>
-                }
-                else if (!string.IsNullOrEmpty(Model[i + 1].Description))
-                {
-                    int length = (Model[i + 1].Description.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i + 1].Description.Length;
-                    <p class="summary"><h4>Description:</h4> @Model[i + 1].Description.Substring(0, length) <text>...</text></p>
-                }
-                <p class="keywords">
-                    <h4>Keywords:</h4>
-                    @foreach (var k in Model[i + 1].Keywords)
+                        </p>
+                        @if (!string.IsNullOrEmpty(Model[i + 1].Storyline))
+                        {
+                            int length = (Model[i + 1].Storyline.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i + 1].Storyline.Length;
+                            <p class="summary"><h4>Description:</h4> @Model[i + 1].Storyline.Substring(0, length) <text>...</text></p>
+                        }
+                        else if (!string.IsNullOrEmpty(Model[i + 1].Description))
+                        {
+                            int length = (Model[i + 1].Description.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i + 1].Description.Length;
+                            <p class="summary"><h4>Description:</h4> @Model[i + 1].Description.Substring(0, length) <text>...</text></p>
+                        }
+                        <p class="keywords">
+                            <h4>Keywords:</h4>
+                            @foreach (var k in Model[i + 1].Keywords)
                     {
-                        @: @k
+                                @: @k
                     }
-                </p>
-            </div>
-            }
-            <!-- @Html.Raw(i % 2 == 0 ? "</div>" : "") -->
-        </div>
+                        </p>
+                    </div>
+
+
+
+                }
+                <!-- @Html.Raw(i % 2 == 0 ? "</div>" : "") -->
+                </div>
 }
 </div>
-<div class="previous-next">
-    @{ 
-        int offset = (int)ViewData["offset"];
-        int count = (int)ViewData["count"];
-        int maxPages = (int)ViewData["MaxPages"];
-        int maxElements = (int)ViewData["MaxElements"];
-        int currentPage = 0;
-        if (ViewData["CurrentPage"] != null) {
-            currentPage = (int)ViewData["CurrentPage"];
-        }
-        int previous = (offset - maxElements < 0) ? offset = 0 : offset - maxElements;
-    }
-    @if (offset != 0)
-    {
-        @Html.ActionLink("First ", "Games", "Collection", new { offset = 0 }, null);
-        @Html.ActionLink("Previous", "Games", "Collection", new { offset = previous, currentPage = currentPage - 1 }, null);
-        }
+<div class="previous-next ">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            @{
+                int offset = (int)ViewData["offset"];
+                int count = (int)ViewData["count"];
+                int maxPages = (int)ViewData["MaxPages"];
+                int maxElements = (int)ViewData["MaxElements"];
+                int currentPage = 0;
+                if (ViewData["CurrentPage"] != null)
+                {
+                    currentPage = (int)ViewData["CurrentPage"];
+                }
+                int previous = (offset - maxElements < 0) ? offset = 0 : offset - maxElements;
+            }
+            @if (offset != 0)
+            {
+                <li>
+                    @Html.ActionLink("First ", "Games", "Collection", new { offset = 0 }, new Dictionary<string, object> {
+                                                                                           { "aria-label", "First" }
+                                                                                        })
+                </li>
+                    <li>
+                        @Html.ActionLink("Previous", "Games", "Collection", new { offset = previous, currentPage = currentPage - 1 },
+                                                                                        new Dictionary<string, object> {
+                                                                                           { "aria-label", "Previous" }
+                                                                                        })
+                    </li>
+            }
 
-        @for (int i = offset+maxElements, j=currentPage+1, k=0;i<(count/4) && k < maxPages;i+=maxElements, j++, k++)
-        {
-            @Html.ActionLink(j.ToString(), "Games", "Collection", new { offset = i, currentPage = j }, null);
-            @Html.Raw(" ");
-        }
+            @for (int i = offset + maxElements, j = currentPage + 1, k = 0; i < (count / 4) && k < maxPages; i += maxElements, j++, k++)
+            {
+                <li>
+                    @Html.ActionLink(j.ToString(), "Games", "Collection", new { offset = i, currentPage = j }, null)
+                </li>
+            }
 
-        @if (count > 4 && offset * 4 < count)
-        {
-            @Html.ActionLink("Next", "Games", "Collection", new { offset = offset+maxElements, currentPage = currentPage + 1 }, null);
-            @*@Html.ActionLink(" Last", "Games", "Collection", new { offset = count-4 }, null);*@
-        }
+            @if (count > 4 && offset * 4 < count)
+            {
+                <li>
+                    @Html.ActionLink("Next", "Games", "Collection", new { offset = offset + maxElements, currentPage = currentPage + 1 },
+                                                                                        new Dictionary<string, object> {
+                                                                                           { "aria-label", "Next" }
+                                                                                        })
+                </li>
+                    @*@Html.ActionLink(" Last", "Games", "Collection", new { offset = count-4 }, null);*@
+            }
+        </ul>
+    </nav>
+</div>
 </div>
