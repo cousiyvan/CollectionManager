@@ -1,111 +1,13 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
 @model List<CollectionManager.Models.Collection.Game>
 @using CollectionManager.Models.Collection;
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
-@{
-    ViewData["Title"] = "Games";
-}
 
-<ul class="nav nav-pills myNavs">
-    @if (SignInManager.IsSignedIn(User))
-    {
-        @if (ViewData["MyCollectionGames"] != null)
-        {
-            <li role="presentation" class="GamesMenuItems" id="MyCollection"><a href="#">My Collection</a></li>
-        }
-        @if (ViewData["MyWishlistGames"] != null)
-        {
-            <li role="presentation" class="GamesMenuItems" id="MyWishlist"><a href="#">My Wishlist</a></li>
-        }
-        @if (ViewData["MyFavoritesGames"] != null)
-        {
-            <li role="presentation" class="GamesMenuItems" id="MyFavorites"><a href="#">My Favorites</a></li>
-        }
-    }
-    <li role="presentation" id="LatestReleases" class="GamesMenuItems active"><a href="#">Latest Releases</a></li>
-    <li role="presentation" id="Search" class="GamesMenuItems"><a href="#">Search</a></li>
-</ul>
-
-<div class="SearchGameContainer">
-    <div class="input-group">
-        <span class="input-group-addon" id="label-search">Search text</span>
-        <input type="text" class="form-control" id="input-search" aria-describedby="label-search">
-    </div>
-    <div class="btn-group" role="group" aria-label="...">
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Filters
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-                <li><a href="#" id="ReleaseDateFilter">Release dates</a></li>
-                <li><a href="#" id="RatingFilter">Rating</a></li>
-            </ul>
-        </div>
-        <div class="btn-group" role="group" id="ReleasesDateFilterComponents">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Releases Dates
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-                <li><a href="#" id="ascendantFilter">Ascendant</a></li>
-                <li><a href="#" id="descendantFilter">Descendant</a></li>
-            </ul>
-        </div>
-    </div>
-    <div id="ratingFiltersComponents">
-        <div class="input-group">
-            <span class="input-group-addon">Lower than</span>
-            <input type="text" class="form-control" aria-label="percentage">
-        </div>
-        <div class="input-group">
-            <span class="input-group-addon">Greater than</span>
-            <input type="text" class="form-control" aria-label="percentage">
-        </div>
-    </div>
-    <div id="SearchQueryDisplay"> 
-        <span class="label label-info" id="SearchQuery"></span>
-        <button id="SearchSubmit">Search</button>
-    </div>
-</div>
-
-@if (SignInManager.IsSignedIn(User))
-{
-    @if (ViewData["MyCollectionGames"] != null || ViewData["MyWishlistGames"] != null || ViewData["MyFavoritesGames"] != null)
-    {
-        List<Game> myGames = (List<Game>)ViewData["MyCollectionGames"];
-        List<Game> myWishlist = (List<Game>)ViewData["MyWishlistGames"];
-        List<Game> myFavorites = (List<Game>)ViewData["MyFavoritesGames"];
-
-        @*@Html.Raw(Json.Serialize(ViewData["MyCollectionGames"]));*@
-        @if (myGames != null && myGames.Count > 0)
-        {
-            <div class="MyCollectionGamesContainer">
-                <h2>My Collection</h2>
-                @await Html.PartialAsync("_MyCollectionHelper", myGames)
-            </div>
-        }
-
-        @if (myWishlist != null && myWishlist.Count > 0)
-        {
-            <div class="MyWishlistGamesContainer">
-                <h2>My Wishlist</h2>
-                @await Html.PartialAsync("_MyCollectionHelper", myWishlist)
-            </div>
-        }
-
-        @if (myFavorites != null && myFavorites.Count > 0)
-        {
-            <div class="MyFavoritesGamesContainer">
-                <h2>My Favorites</h2>
-                @await Html.PartialAsync("_MyCollectionHelper", myFavorites)
-            </div>
-        }
-    }
-}
-
-<div class="MyLatestReleasesGamesContainer">
-    <h2>Latest releases</h2>
+<div class="MySearchGamesContainer">
+    <h2>Search results</h2>
     <div class="container-fluid">
 
 
@@ -191,27 +93,27 @@
                 }
                 <!-- @Html.Raw(i % 2 == 0 ? "</div>" : "") -->
             </div>
-            }
-        </div>
-        <div class="previous-next ">
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
+        }
+    </div>
+    <div class="previous-next ">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
 
 
 
-            @{
-                int offset = (int)ViewData["offset"];
-                int count = (int)ViewData["count"];
-                int maxPages = (int)ViewData["MaxPages"];
-                int maxElements = (int)ViewData["MaxElements"];
-                int currentPage = 0;
-                if (ViewData["CurrentPage"] != null)
-                {
-                    currentPage = (int)ViewData["CurrentPage"];
+                @{
+                    int offset = (int)ViewData["offset"];
+                    int count = (int)ViewData["count"];
+                    int maxPages = (int)ViewData["MaxPages"];
+                    int maxElements = (int)ViewData["MaxElements"];
+                    int currentPage = 0;
+                    if (ViewData["CurrentPage"] != null)
+                    {
+                        currentPage = (int)ViewData["CurrentPage"];
+                    }
+                    int previous = (offset - maxElements < 0) ? offset = 0 : offset - maxElements;
                 }
-                int previous = (offset - maxElements < 0) ? offset = 0 : offset - maxElements;
-            }
-            @if (offset != 0)
+                @if (offset != 0)
             {
                     <li>
                         @Html.ActionLink("First ", "Games", "Collection", new { offset = 0 }, new Dictionary<string, object> {
@@ -224,26 +126,26 @@
                                                                                            { "aria-label", "Previous" }
                                                                                         })
                     </li>
-}
+                }
 
-@for (int i = offset + maxElements, j = currentPage + 1, k = 0; i < (count / 4) && k < maxPages; i += maxElements, j++, k++)
+                @for (int i = offset + maxElements, j = currentPage + 1, k = 0; i < (count / 4) && k < maxPages; i += maxElements, j++, k++)
             {
-    <li>
-        @Html.ActionLink(j.ToString(), "Games", "Collection", new { offset = i, currentPage = j }, null)
-    </li>
-}
+                    <li>
+                        @Html.ActionLink(j.ToString(), "Games", "Collection", new { offset = i, currentPage = j }, null)
+                    </li>
+                }
 
-@if (count > 4 && offset * 4 < count)
+                @if (count > 4 && offset * 4 < count)
             {
-    <li>
-        @Html.ActionLink("Next", "Games", "Collection", new { offset = offset + maxElements, currentPage = currentPage + 1 },
+                    <li>
+                        @Html.ActionLink("Next", "Games", "Collection", new { offset = offset + maxElements, currentPage = currentPage + 1 },
                                                                                         new Dictionary<string, object> {
                                                                                            { "aria-label", "Next" }
                                                                                         })
-    </li>
-    @*@Html.ActionLink(" Last", "Games", "Collection", new { offset = count-4 }, null);*@
-}
-</ul>
-</nav>
-</div>
+                    </li>
+                    @*@Html.ActionLink(" Last", "Games", "Collection", new { offset = count-4 }, null);*@
+                }
+            </ul>
+        </nav>
+    </div>
 </div>

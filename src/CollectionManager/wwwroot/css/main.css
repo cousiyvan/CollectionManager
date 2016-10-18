@@ -35,12 +35,15 @@
     padding-bottom: 40px;
 }
 
-.MyCollectionGamesContainer, .MyWishlistGamesContainer, .MyFavoritesGamesContainer {
+.MyCollectionGamesContainer, .MyWishlistGamesContainer, .MyFavoritesGamesContainer, .SearchGameContainer {
     display:none;
 }
 
 .myNavs {
     margin: 10px;
+}
+.hide{
+    display:none;
 }
 
 /* Overall styles */

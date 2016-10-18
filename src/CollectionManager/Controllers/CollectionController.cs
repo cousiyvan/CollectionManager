@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using CollectionManager.Models;
 using Microsoft.Extensions.Logging;
 using CollectionManager.Models.DB;
+using System.Net;
 
 namespace CollectionManager.Controllers
 {
@@ -104,22 +105,13 @@ namespace CollectionManager.Controllers
                     ViewData["count"] = count.Value<int>();
                     parameters = $"games/?fields=*&limit={MaxElements}&offset={offset}&order=release_dates.date%3Adesc";
                 }
-                //json = restApi.DoCall();
-
-                //while (json.Read())
-                //{
-                //    if (json.Value != null)
-                //    {
-                //        ViewBag.Information += json.Value + " ";
-                //    }
-                //}
 
                 try
                 {
-                    restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
-                    json = restApi.DoCall();
                     ApplicationUser user = this.GetConnectedUser();
-                    games = mapper.Mapping(json, restApi, _gameContext, user, _logger);
+                        restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
+                        json = restApi.DoCall();
+                        games = mapper.Mapping(json, restApi, _gameContext, user, _logger);
 
                     // We get user data if he is connected
                     if (user != null)
@@ -156,6 +148,18 @@ namespace CollectionManager.Controllers
                             ViewData["MyFavoritesGames"] = mapper.Mapping(json, restApi, _gameContext, user, _logger);
                         }
                     }
+
+                    //if (ids != null && ids.Count > 0)
+                    //{
+                    //    string idsString = string.Empty;
+                    //    ids.ForEach(idsElement => idsString += $"{(string)idsElement.ToString()},");
+                    //    parameters = $"games/{idsString.Substring(0, idsString.Length-1)}?fields=*";
+                    //    restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
+                    //    json = restApi.DoCall();
+                    //    List<Game> gamesFound = mapper.Mapping(json, restApi, _gameContext, user, _logger);
+                    //    TempData["SearchGames"] = gamesFound;
+                    //    // return RedirectToAction(nameof(CollectionController.SearchGamesDisplay), "Collection", new { gamesFound = games, offset = 0, currentPage = 0 });
+                    //}
                 }
                 catch (Exception exc)
                 {
@@ -228,6 +232,66 @@ namespace CollectionManager.Controllers
             TempData["AlertClass"] = this.AlertSuccessClass;
 
             return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = offset, currentPage = currentPage });
+        }
+
+        [HttpPost]
+        public void SearchGames(string parameterQuery)
+        {
+            Dictionary<string, string> apiKey = new Dictionary<string, string>();
+            apiKey.Add("X-Mashape-Key", _appSettings.ApiKey.Game);
+            JsonReader json;
+            Uri gameApiRestUrl = null;
+            string parameters = string.Empty;
+            List<int> ids = new List<int>();
+            if (Uri.TryCreate(_appSettings.ServicesSettings.Game, UriKind.Absolute, out gameApiRestUrl))
+            {
+                parameters = WebUtility.HtmlDecode(parameterQuery);
+                RestAPI restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
+                json = restApi.DoCall();
+
+                // read the search result
+                JToken token = JToken.Load(json);
+                foreach (JToken t in token.ToList())
+                {
+                    ids.Add((int)t.SelectToken("id"));
+                }
+            }
+
+            TempData["SearchGamesIds"] = ids;
+            // return RedirectToAction(nameof(CollectionController.SearchGamesDisplay), "Collection", null);
+        }
+
+        public IActionResult SearchGamesDisplay(int offset = 0, int currentPage = 0)
+        {
+            ViewData["MaxPages"] = this.MaxPages;
+            ViewData["offset"] = offset;
+            ViewData["CurrentPage"] = currentPage;
+            ViewData["MaxElements"] = this.MaxElements;
+            ViewData["SummaryMaxCharacters"] = this.SummaryMaxCharacters;
+            List<int> ids = ((int[])TempData["SearchGamesIds"]).ToList();
+            Uri gameApiRestUrl = null;
+            string parameters = string.Empty;
+            Dictionary<string, string> apiKey = new Dictionary<string, string>();
+            apiKey.Add("X-Mashape-Key", _appSettings.ApiKey.Game);
+            RestAPI restApi = null;
+            JsonReader json;
+            string restOutput = string.Empty;
+            MapperGame mapper = new MapperGame();
+            List<Game> gamesFound = new List<Game>();
+            ApplicationUser user = this.GetConnectedUser();
+
+            if (Uri.TryCreate(_appSettings.ServicesSettings.Game, UriKind.Absolute, out gameApiRestUrl))
+            {
+                string idsString = string.Empty;
+                ids.ForEach(idsElement => idsString += $"{(string)idsElement.ToString()},");
+                parameters = $"games/{idsString.Substring(0, idsString.Length - 1)}?fields=*";
+                restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
+                json = restApi.DoCall();
+                gamesFound = mapper.Mapping(json, restApi, _gameContext, user, _logger);
+                // gamesFound = (List<Game>)TempData["SearchGames"];
+            }
+
+            return View(gamesFound);
         }
 
         /// <summary>
