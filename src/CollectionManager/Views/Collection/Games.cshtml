@@ -30,8 +30,13 @@
     <div class="input-group">
         <span class="input-group-addon" id="label-search">Search text</span>
         <input type="text" class="form-control" id="input-search" aria-describedby="label-search">
+        <button id="SearchSubmit">Search</button>
     </div>
-    <div class="btn-group" role="group" aria-label="...">
+    <div class="alert alert-danger" alert-dismissible" role="alert" id="emptySearchTextAlert">
+        @*<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>*@
+        Please enter a text to search for
+    </div>
+    @*<div class="btn-group" role="group" aria-label="...">
         <div class="btn-group" role="group">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Filters
@@ -66,7 +71,7 @@
     <div id="SearchQueryDisplay"> 
         <span class="label label-info" id="SearchQuery"></span>
         <button id="SearchSubmit">Search</button>
-    </div>
+    </div>*@
 </div>
 
 @if (SignInManager.IsSignedIn(User))
@@ -107,9 +112,6 @@
 <div class="MyLatestReleasesGamesContainer">
     <h2>Latest releases</h2>
     <div class="container-fluid">
-
-
-
         @for (var i = 0; i < Model.Count; i += 2)
         {
         <!-- @Html.Raw(i % 2 == 0 ? "<div class='row'>": "") -->
