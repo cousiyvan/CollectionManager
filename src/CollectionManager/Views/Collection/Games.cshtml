@@ -37,41 +37,41 @@
         Please enter a text to search for
     </div>
     @*<div class="btn-group" role="group" aria-label="...">
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Filters
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-                <li><a href="#" id="ReleaseDateFilter">Release dates</a></li>
-                <li><a href="#" id="RatingFilter">Rating</a></li>
-            </ul>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Filters
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" id="ReleaseDateFilter">Release dates</a></li>
+                    <li><a href="#" id="RatingFilter">Rating</a></li>
+                </ul>
+            </div>
+            <div class="btn-group" role="group" id="ReleasesDateFilterComponents">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Releases Dates
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" id="ascendantFilter">Ascendant</a></li>
+                    <li><a href="#" id="descendantFilter">Descendant</a></li>
+                </ul>
+            </div>
         </div>
-        <div class="btn-group" role="group" id="ReleasesDateFilterComponents">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Releases Dates
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-                <li><a href="#" id="ascendantFilter">Ascendant</a></li>
-                <li><a href="#" id="descendantFilter">Descendant</a></li>
-            </ul>
+        <div id="ratingFiltersComponents">
+            <div class="input-group">
+                <span class="input-group-addon">Lower than</span>
+                <input type="text" class="form-control" aria-label="percentage">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon">Greater than</span>
+                <input type="text" class="form-control" aria-label="percentage">
+            </div>
         </div>
-    </div>
-    <div id="ratingFiltersComponents">
-        <div class="input-group">
-            <span class="input-group-addon">Lower than</span>
-            <input type="text" class="form-control" aria-label="percentage">
-        </div>
-        <div class="input-group">
-            <span class="input-group-addon">Greater than</span>
-            <input type="text" class="form-control" aria-label="percentage">
-        </div>
-    </div>
-    <div id="SearchQueryDisplay"> 
-        <span class="label label-info" id="SearchQuery"></span>
-        <button id="SearchSubmit">Search</button>
-    </div>*@
+        <div id="SearchQueryDisplay">
+            <span class="label label-info" id="SearchQuery"></span>
+            <button id="SearchSubmit">Search</button>
+        </div>*@
 </div>
 
 @if (SignInManager.IsSignedIn(User))
@@ -193,27 +193,27 @@
                 }
                 <!-- @Html.Raw(i % 2 == 0 ? "</div>" : "") -->
             </div>
-            }
-        </div>
-        <div class="previous-next ">
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
+        }
+    </div>
+    <div class="previous-next ">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
 
 
 
-            @{
-                int offset = (int)ViewData["offset"];
-                int count = (int)ViewData["count"];
-                int maxPages = (int)ViewData["MaxPages"];
-                int maxElements = (int)ViewData["MaxElements"];
-                int currentPage = 0;
-                if (ViewData["CurrentPage"] != null)
-                {
-                    currentPage = (int)ViewData["CurrentPage"];
+                @{
+                    int offset = (int)ViewData["offset"];
+                    int count = (int)ViewData["count"];
+                    int maxPages = (int)ViewData["MaxPages"];
+                    int maxElements = (int)ViewData["MaxElements"];
+                    int currentPage = 0;
+                    if (ViewData["CurrentPage"] != null)
+                    {
+                        currentPage = (int)ViewData["CurrentPage"];
+                    }
+                    int previous = (offset - maxElements < 0) ? offset = 0 : offset - maxElements;
                 }
-                int previous = (offset - maxElements < 0) ? offset = 0 : offset - maxElements;
-            }
-            @if (offset != 0)
+                @if (offset != 0)
             {
                     <li>
                         @Html.ActionLink("First ", "Games", "Collection", new { offset = 0 }, new Dictionary<string, object> {
@@ -226,26 +226,26 @@
                                                                                            { "aria-label", "Previous" }
                                                                                         })
                     </li>
-}
+                }
 
-@for (int i = offset + maxElements, j = currentPage + 1, k = 0; i < (count / 4) && k < maxPages; i += maxElements, j++, k++)
+                @for (int i = offset + maxElements, j = currentPage + 1, k = 0; i < (count / 4) && k < maxPages; i += maxElements, j++, k++)
             {
-    <li>
-        @Html.ActionLink(j.ToString(), "Games", "Collection", new { offset = i, currentPage = j }, null)
-    </li>
-}
+                    <li>
+                        @Html.ActionLink(j.ToString(), "Games", "Collection", new { offset = i, currentPage = j }, null)
+                    </li>
+                }
 
-@if (count > 4 && offset * 4 < count)
+                @if (count > 4 && offset * 4 < count)
             {
-    <li>
-        @Html.ActionLink("Next", "Games", "Collection", new { offset = offset + maxElements, currentPage = currentPage + 1 },
+                    <li>
+                        @Html.ActionLink("Next", "Games", "Collection", new { offset = offset + maxElements, currentPage = currentPage + 1 },
                                                                                         new Dictionary<string, object> {
                                                                                            { "aria-label", "Next" }
                                                                                         })
-    </li>
-    @*@Html.ActionLink(" Last", "Games", "Collection", new { offset = count-4 }, null);*@
-}
-</ul>
-</nav>
-</div>
+                    </li>
+                    @*@Html.ActionLink(" Last", "Games", "Collection", new { offset = count-4 }, null);*@
+                }
+            </ul>
+        </nav>
+    </div>
 </div>

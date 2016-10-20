@@ -234,8 +234,7 @@ namespace CollectionManager.Controllers
             return RedirectToAction(nameof(CollectionController.Games), "Collection", new { offset = offset, currentPage = currentPage });
         }
 
-        [HttpPost]
-        public void SearchGames(string parameterQuery)
+        private List<int> SearchGames(string parameterQuery)
         {
             Dictionary<string, string> apiKey = new Dictionary<string, string>();
             apiKey.Add("X-Mashape-Key", _appSettings.ApiKey.Game);
@@ -257,18 +256,21 @@ namespace CollectionManager.Controllers
                 }
             }
 
-            TempData["SearchGamesIds"] = ids;
+            return ids;
             // return RedirectToAction(nameof(CollectionController.SearchGamesDisplay), "Collection", null);
         }
 
-        public IActionResult SearchGamesDisplay(int offset = 0, int currentPage = 0)
+        [HttpPost]
+        public IActionResult SearchGamesDisplay(string parameterQuery)
         {
+            List<int> ids = this.SearchGames(parameterQuery);
+
             ViewData["MaxPages"] = this.MaxPages;
-            ViewData["offset"] = offset;
-            ViewData["CurrentPage"] = currentPage;
-            ViewData["MaxElements"] = this.MaxElements;
+            //ViewData["offset"] = offset;
+            //ViewData["CurrentPage"] = currentPage;
+            //ViewData["MaxElements"] = this.MaxElements;
             ViewData["SummaryMaxCharacters"] = this.SummaryMaxCharacters;
-            List<int> ids = ((int[])TempData["SearchGamesIds"]).ToList();
+            // List<int> ids = ((int[])TempData["SearchGamesIds"]).ToList();
             Uri gameApiRestUrl = null;
             string parameters = string.Empty;
             Dictionary<string, string> apiKey = new Dictionary<string, string>();

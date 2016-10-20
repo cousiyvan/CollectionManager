@@ -129,16 +129,22 @@ $(document).ready(function () {
     function AddToCart(searchQuery) {
         $.ajax({
             type: 'POST',
-            url: '/Collection/SearchGames',
+            url: '/Collection/SearchGamesDisplay',
             data: { parameterQuery: searchQuery },
+            crossDomain: true,
             beforeSend: function () {
-
+                triggerLoading($(".MyLatestReleasesGamesContainer"));
             },
-            success: function (html) {
-                triggerLoading($(".MyLatestReleasesGamesContainer"))
-                $(".MyLatestReleasesGamesContainer").load("/Collection/SearchGamesDisplay");
+            success: function (result) {
+                //$(".MyLatestReleasesGamesContainer").load("/Collection/SearchGamesDisplay", function() {
+                //    $(".MyLatestReleasesGamesContainer").html($(".MyLatestReleasesGamesContainer").find(".MySearchGamesContainer").html());
+                //});
+                $(".MyLatestReleasesGamesContainer").html($(".MySearchGamesContainer", result));
                 // remove additional footer - Don't know why it appears
-                $(".body-content > footer").remove();
+                // $(".body-content > footer").remove();
+            },
+            error: function (err) {
+                alert("error" + err);
             }
         });
     }
@@ -148,11 +154,11 @@ $(document).ready(function () {
         container.html("<img src='/images/ring.gif' id='spinner' alt='loading...' style='display:block;text-align:center;' />");
     }
 
-    function triggerAlert(alertMessage) { }
-    // alert(alertMessage);
-    if (alertMessage !== "") {
-        $(".alert-container").fadeTo(2000, 500).slideUp(500, function () {
-            $(".alert-container").slideUp(500);
-        });
-    }
+    //function triggerAlert(alertMessage) { }
+    //// alert(alertMessage);
+    //if (alertMessage !== "") {
+    //    $(".alert-container").fadeTo(2000, 500).slideUp(500, function () {
+    //        $(".alert-container").slideUp(500);
+    //    });
+    //}
 });
