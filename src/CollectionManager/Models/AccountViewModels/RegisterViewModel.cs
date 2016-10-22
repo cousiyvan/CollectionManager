@@ -9,6 +9,10 @@ namespace CollectionManager.Models.AccountViewModels
     public class RegisterViewModel
     {
         [Required]
+        [Display(Name = "Surname")]
+        public string Surname { get; set; }
+
+        [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }

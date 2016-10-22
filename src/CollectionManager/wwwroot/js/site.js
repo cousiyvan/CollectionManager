@@ -140,6 +140,7 @@ $(document).ready(function () {
                 //    $(".MyLatestReleasesGamesContainer").html($(".MyLatestReleasesGamesContainer").find(".MySearchGamesContainer").html());
                 //});
                 $(".MyLatestReleasesGamesContainer").html($(".MySearchGamesContainer", result));
+                $("#loadingModal").modal('hide');
                 // remove additional footer - Don't know why it appears
                 // $(".body-content > footer").remove();
             },
@@ -151,7 +152,11 @@ $(document).ready(function () {
 
     function triggerLoading(container)
     {
-        container.html("<img src='/images/ring.gif' id='spinner' alt='loading...' style='display:block;text-align:center;' />");
+        // container.html("<img src='/images/ring.gif' id='spinner' alt='loading...' style='display:block;text-align:center;' />");
+        $("#loadingModal").modal({
+            backdrop:'static',
+            show: true
+        });
     }
 
     //function triggerAlert(alertMessage) { }

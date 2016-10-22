@@ -34,9 +34,9 @@
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Collection" asp-action="Games">Games</a></li>
                     @*<li><a asp-area="" asp-controller="Collection" asp-action="Books">Books</a></li>
-                    <li><a asp-area="" asp-controller="Collection" asp-action="Music">Music</a></li>
-                    <li><a asp-area="" asp-controller="Collection" asp-action="Series">Series</a></li>
-                    <li><a asp-area="" asp-controller="Collection" asp-action="Movies">Movies</a></li>*@
+                        <li><a asp-area="" asp-controller="Collection" asp-action="Music">Music</a></li>
+                        <li><a asp-area="" asp-controller="Collection" asp-action="Series">Series</a></li>
+                        <li><a asp-area="" asp-controller="Collection" asp-action="Movies">Movies</a></li>*@
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>
@@ -45,10 +45,10 @@
     <div class="container body-content">
         @if (!string.IsNullOrEmpty((string)ViewData["AlertMessage"]))
         {
-        <div class="@ViewData["AlertClass"] alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            @ViewData["AlertMessage"]
-        </div>
+            <div class="@ViewData["AlertClass"] alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                @ViewData["AlertMessage"]
+            </div>
         }
         @RenderBody()
         <hr />
@@ -61,6 +61,14 @@
                 </ul>
             </p>
         </footer>
+    </div>
+    <div class="modal fade" id="loadingModal">
+            <div class="modal-body fullscreen">
+                <div class="center-content">
+                    <img src="/images/ring.gif" id="spinner" alt="loading..." class="" />
+                </div>
+            </div>
+        </div>
     </div>
 
     <environment names="Development">
