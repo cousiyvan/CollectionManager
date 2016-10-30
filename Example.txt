@@ -1,3 +1,4 @@
+Game Information
 id 7346 
 name The Legend of Zelda: Breath of the Wild 
 slug the-legend-of-zelda-breath-of-the-wild 
@@ -49,3 +50,35 @@ cover
 	cloudinary_id id7oqxsma8y2lcazszzk 
 	width 300 
 	height 428
+
+
+Movie Information
+"adult":false
+"backdrop_path":null
+"belongs_to_collection":null
+"budget":0
+"genres":[{"id":53
+"name":"Thriller"}\n{"id":80\n"name":"Crime"}]
+"homepage":null
+"id":423464
+"imdb_id":"tt0070081"
+"original_language":"es"
+"original_title":"Los fríos senderos del crimen"
+"overview":null
+"popularity":0.0
+"poster_path":"/4VxBPbp8Yq8Q7fZIbPnWsWoc261.jpg"
+"production_companies":[{"name":"ABC Cinematográfica"
+"id":82903}]
+"production_countries":[{"iso_3166_1":"ES"
+"name":"Spain"}]
+"release_date":"1974-07-07"
+"revenue":0
+"runtime":null
+"spoken_languages":[{"iso_639_1":"es"
+"name":"Español"}]
+"status":"Released"
+"tagline":null
+"title":"Los fríos senderos del crimen"
+"video":false
+"vote_average":0.0
+"vote_count":0

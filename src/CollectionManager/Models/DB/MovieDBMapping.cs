@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace CollectionManager.Models.DB
 {
-    public class MiscGameInformation:MiscInformation
+    public class MovieDBMapping: DBMapping
     {
         #region Properties
-        public Game.CallType Type { get; set; }
+        public int MovieId { get; set; }
         #endregion
     }
 }

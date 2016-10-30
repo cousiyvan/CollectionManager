@@ -23,6 +23,7 @@ namespace CollectionManager.Controllers
         #region Members
         private readonly AppSettings _appSettings;
         private readonly GameContext _gameContext;
+        private readonly MovieContext _movieContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
@@ -46,12 +47,14 @@ namespace CollectionManager.Controllers
         public CollectionController(
             IOptions<AppSettings> appSettings,
             GameContext gameContext,
+            MovieContext movieContext,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILoggerFactory loggerFactory)
         {
             _appSettings = appSettings.Value;
             _gameContext = gameContext;
+            _movieContext = movieContext;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = loggerFactory.CreateLogger<AccountController>();
@@ -67,6 +70,7 @@ namespace CollectionManager.Controllers
             return View();
         }
 
+        #region Game Controller methodes
         /// <summary>
         /// Controller to the Games view
         /// </summary>
@@ -295,6 +299,7 @@ namespace CollectionManager.Controllers
 
             return View(gamesFound);
         }
+        #endregion
 
         /// <summary>
         /// Controller to the Books view
@@ -327,9 +332,138 @@ namespace CollectionManager.Controllers
         /// Controller to the Movies view
         /// </summary>
         /// <returns>The view to be displayed</returns>
-        public IActionResult Movies()
+        public IActionResult Movies(int? id, int offset = 0, int currentPage = 0)
         {
-            return View();
+            // init variables
+            Uri movieApiRestUrl = null;
+            string parameters = string.Empty;
+            RestAPI restApi = null;
+            JsonReader json;
+            string restOutput = string.Empty;
+            MapperMovie mapper = new MapperMovie();
+            List<Movie> movies = null;
+            Dictionary<string, string> apiRequests = new Dictionary<string, string>();
+
+            // init some ViewData values
+            ViewData["MaxPages"] = this.MaxPages;
+            ViewData["offset"] = offset;
+            ViewData["CurrentPage"] = currentPage;
+            ViewData["MaxElements"] = this.MaxElements;
+            ViewData["SummaryMaxCharacters"] = this.SummaryMaxCharacters;
+            ApplicationUser user = this.GetConnectedUser();
+
+            if (Uri.TryCreate(_appSettings.ServicesSettings.Game, UriKind.Absolute, out movieApiRestUrl))
+            {
+                restApi = new RestAPI(apiRequests, movieApiRestUrl, parameters);
+                if (id != null)
+                {
+                    parameters = $"movie/{id}?api_key={_appSettings.ApiKey.Game}&language=en-US";
+                }
+                else
+                {
+                    JToken latestId = restApi.GetSpecificValue($"movie/latest?api_key={_appSettings.ApiKey.Game}&language=en-US", "id");
+                    ViewData["count"] = latestId.Value<int>();
+
+                    for (int i = (int)(ViewData["count"], j=0;j<MaxElements;i--, j++)
+                    {
+                        parameters = $"movie/{i}?api_key={_appSettings.ApiKey.Game}&language=en-US";
+                        restApi = new RestAPI(apiRequests, movieApiRestUrl, parameters);
+                        json = restApi.DoCall();
+                        movies.Add(mapper.Mapping(json, restApi, _movieContext, user, _logger));
+                    }
+                    
+                    // parameters = $"movie/latest?api_key={_appSettings.ApiKey.Game}&language=en-US";
+                }
+
+                try
+                {
+                    restApi = new RestAPI(apiRequests, movieApiRestUrl, parameters);
+                    json = restApi.DoCall();
+                    // movies = mapper.Mapping(json, restApi, _movieContext, user, _logger);
+
+                    // We get user data if he is connected
+                    if (user != null)
+                    {
+                    //    var linqUserGames = from g in _gameContext.GameDbMapping.ToList()
+                    //                        where user.Id == g.UserId
+                    //                        select g;
+                    //    string collectionId = string.Empty, wishlistId = string.Empty, favoritesId = string.Empty;
+                    //    foreach (var userGame in linqUserGames)
+                    //    {
+                    //        collectionId += (userGame.Collection) ? $"{userGame.GameId.ToString()}," : string.Empty;
+                    //        wishlistId += (userGame.Wishlist) ? $"{userGame.GameId.ToString()}," : string.Empty;
+                    //        favoritesId += (userGame.Favorite) ? $"{userGame.GameId.ToString()}," : string.Empty;
+                    //    }
+
+                    //    if (!string.IsNullOrEmpty(collectionId))
+                    //    {
+                    //        restApi.Parameters = $"games/{collectionId.Substring(0, collectionId.Length - 1)}?fields=*&limit={MaxElements}&offset={offset}&order=release_dates.date%3Adesc";
+                    //        json = restApi.DoCall();
+                    //        ViewData["MyCollectionGames"] = mapper.Mapping(json, restApi, _gameContext, user, _logger);
+                    //    }
+
+                    //    if (!string.IsNullOrEmpty(wishlistId))
+                    //    {
+                    //        restApi.Parameters = $"games/{wishlistId.Substring(0, wishlistId.Length - 1)}?fields=*&limit={MaxElements}&offset={offset}&order=release_dates.date%3Adesc";
+                    //        json = restApi.DoCall();
+                    //        ViewData["MyWishlistGames"] = mapper.Mapping(json, restApi, _gameContext, user, _logger);
+                    //    }
+
+                    //    if (!string.IsNullOrEmpty(favoritesId))
+                    //    {
+                    //        restApi.Parameters = $"games/{favoritesId.Substring(0, favoritesId.Length - 1)}?fields=*&limit={MaxElements}&offset={offset}&order=release_dates.date%3Adesc";
+                    //        json = restApi.DoCall();
+                    //        ViewData["MyFavoritesGames"] = mapper.Mapping(json, restApi, _gameContext, user, _logger);
+                    //    }
+                    }
+
+                    //if (ids != null && ids.Count > 0)
+                    //{
+                    //    string idsString = string.Empty;
+                    //    ids.ForEach(idsElement => idsString += $"{(string)idsElement.ToString()},");
+                    //    parameters = $"games/{idsString.Substring(0, idsString.Length-1)}?fields=*";
+                    //    restApi = new RestAPI(apiKey, gameApiRestUrl, parameters);
+                    //    json = restApi.DoCall();
+                    //    List<Game> gamesFound = mapper.Mapping(json, restApi, _gameContext, user, _logger);
+                    //    TempData["SearchGames"] = gamesFound;
+                    //    // return RedirectToAction(nameof(CollectionController.SearchGamesDisplay), "Collection", new { gamesFound = games, offset = 0, currentPage = 0 });
+                    //}
+                }
+                catch (Exception exc)
+                {
+                    _logger.LogError($"Error during call: {exc.Message}");
+                    ViewData["AlertMessage"] = $"Error during process: {exc.Message}";
+                    ViewData["AlertClass"] = this.AlertErrorClass;
+                    movies = null;
+                }
+            }
+            if (movies == null)
+                movies = new List<Movie>();
+
+            ViewResult view = null;
+            if (movies.Count > 1)
+            {
+                view = View(movies);
+            }
+            else if (movies.Count == 1)
+            {
+                view = View("~/Views/Collection/MovieDetails.cshtml", movies[0]);
+            }
+            else
+            {
+                view = new ViewResult();
+            }
+
+            if (!string.IsNullOrEmpty((string)TempData["AlertMessage"]))
+            {
+                ViewData["AlertMessage"] = (string)TempData["AlertMessage"];
+                ViewData["AlertClass"] = (string)TempData["AlertClass"];
+
+                TempData["AlertMessage"] = null;
+                TempData["AlertClass"] = null;
+            }
+
+            return view;
         }
 
         #region Utils

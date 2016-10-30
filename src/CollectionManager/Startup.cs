@@ -50,6 +50,9 @@ namespace CollectionManager
             services.AddDbContext<GameContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            //services.AddDbContext<MovieContext>(options =>
+            //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -66,7 +69,7 @@ namespace CollectionManager
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, GameContext gameContext)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, GameContext gameContext, MovieContext movieContext)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -101,6 +104,7 @@ namespace CollectionManager
             });
 
             DbInitializer.Initialize(gameContext);
+            //DbInitializer.Initialize(movieContext);
         }
     }
 }
