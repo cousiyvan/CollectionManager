@@ -364,7 +364,7 @@ namespace CollectionManager.Controllers
                     JToken latestId = restApi.GetSpecificValue($"movie/latest?api_key={_appSettings.ApiKey.Game}&language=en-US", "id");
                     ViewData["count"] = latestId.Value<int>();
 
-                    for (int i = (int)(ViewData["count"], j=0;j<MaxElements;i--, j++)
+                    for (int i = (int)(ViewData["count"]), j=0;j<MaxElements;i--, j++)
                     {
                         parameters = $"movie/{i}?api_key={_appSettings.ApiKey.Game}&language=en-US";
                         restApi = new RestAPI(apiRequests, movieApiRestUrl, parameters);

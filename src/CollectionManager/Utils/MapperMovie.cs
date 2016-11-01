@@ -32,6 +32,30 @@ namespace CollectionManager.Utils
 
                 // Values from first call
                 movie.Id = (int)jtoken.SelectToken("id");
+                movie.Budget = (int)jtoken.SelectToken("budget");
+                movie.Description = (string)jtoken.SelectToken("overview");
+                movie.ReleaseDate = new Dictionary<string, DateTime>() { { "", (DateTime)jtoken.SelectToken("release_date") } };
+                movie.Title= (string)jtoken.SelectToken("title");
+                movie.Runtime = (TimeSpan)jtoken.SelectToken("runtime");
+                movie.OriginalTitle = (string)jtoken.SelectToken("original_title");
+                movie.Benefits = (int)jtoken.SelectToken("revenue");
+
+                if (jtoken.SelectTokens("genres") != null)
+                {
+                    List<string> genres = jtoken.SelectTokens("genres").Select(s => (string)s.SelectToken("name")).ToList<string>();
+                    movie.Genres.AddRange(genres);
+                }
+
+                if (jtoken.SelectTokens("production_companies") != null)
+                {
+                    List<string> companies = jtoken.SelectTokens("production_companies").Select(s => (string)s.SelectToken("name")).ToList<string>();
+                    movie.Publishers.AddRange(companies);
+                }
+                movie.Websites = new List<Uri>() {
+                    new Uri($"http://www.imdb.com/title/{jtoken.SelectToken("imdb_id")}")
+                };
+
+                movie.Poster = new Uri($"https://image.tmdb.org/t/p/w300_and_h450_bestv2/{jtoken.SelectToken("poster_path")}");
                 //game.Title = (string)jElement.SelectToken("name");
                 //game.OriginalTitle = game.Title;
                 //game.Description = (string)jElement.SelectToken("summary");
