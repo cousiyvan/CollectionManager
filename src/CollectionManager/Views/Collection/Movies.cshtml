@@ -1,0 +1,251 @@
+@model List<CollectionManager.Models.Collection.Movie>
+@using CollectionManager.Models.Collection;
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Movies";
+}
+
+<ul class="nav nav-pills myNavs">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        @if (ViewData["MyCollectionMovies"] != null)
+        {
+            <li role="presentation" class="MoviesMenuItems" id="MyCollection"><a href="#">My Collection</a></li>
+        }
+        @if (ViewData["MyWishlistMovies"] != null)
+        {
+            <li role="presentation" class="MoviesMenuItems" id="MyWishlist"><a href="#">My Wishlist</a></li>
+        }
+        @if (ViewData["MyFavoritesMovies"] != null)
+        {
+            <li role="presentation" class="MoviesMenuItems" id="MyFavorites"><a href="#">My Favorites</a></li>
+        }
+    }
+    <li role="presentation" id="LatestReleases" class="MoviesMenuItems active"><a href="#">Latest Releases</a></li>
+    <li role="presentation" id="Search" class="MoviesMenuItems"><a href="#">Search</a></li>
+</ul>
+
+<div class="SearchGameContainer">
+    <div class="input-group">
+        <span class="input-group-addon" id="label-search">Search text</span>
+        <input type="text" class="form-control" id="input-search" aria-describedby="label-search">
+        <button id="SearchSubmit">Search</button>
+    </div>
+    <div class="alert alert-danger" alert-dismissible" role="alert" id="emptySearchTextAlert">
+        @*<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>*@
+        Please enter a text to search for
+    </div>
+    @*<div class="btn-group" role="group" aria-label="...">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Filters
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" id="ReleaseDateFilter">Release dates</a></li>
+                    <li><a href="#" id="RatingFilter">Rating</a></li>
+                </ul>
+            </div>
+            <div class="btn-group" role="group" id="ReleasesDateFilterComponents">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Releases Dates
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" id="ascendantFilter">Ascendant</a></li>
+                    <li><a href="#" id="descendantFilter">Descendant</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="ratingFiltersComponents">
+            <div class="input-group">
+                <span class="input-group-addon">Lower than</span>
+                <input type="text" class="form-control" aria-label="percentage">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon">Greater than</span>
+                <input type="text" class="form-control" aria-label="percentage">
+            </div>
+        </div>
+        <div id="SearchQueryDisplay">
+            <span class="label label-info" id="SearchQuery"></span>
+            <button id="SearchSubmit">Search</button>
+        </div>*@
+</div>
+
+@if (SignInManager.IsSignedIn(User))
+{
+    @if (ViewData["MyCollectionMovies"] != null || ViewData["MyWishlistMovies"] != null || ViewData["MyFavoritesMovies"] != null)
+    {
+        List<Game> myMovies = (List<Game>)ViewData["MyCollectionMovies"];
+        List<Game> myWishlist = (List<Game>)ViewData["MyWishlistMovies"];
+        List<Game> myFavorites = (List<Game>)ViewData["MyFavoritesMovies"];
+
+        @*@Html.Raw(Json.Serialize(ViewData["MyCollectionMovies"]));*@
+        @if (myMovies != null && myMovies.Count > 0)
+        {
+            <div class="MyCollectionMoviesContainer">
+                <h2>My Collection</h2>
+                @await Html.PartialAsync("_MyCollectionHelper", myMovies)
+            </div>
+        }
+
+        @if (myWishlist != null && myWishlist.Count > 0)
+        {
+            <div class="MyWishlistMoviesContainer">
+                <h2>My Wishlist</h2>
+                @await Html.PartialAsync("_MyCollectionHelper", myWishlist)
+            </div>
+        }
+
+        @if (myFavorites != null && myFavorites.Count > 0)
+        {
+            <div class="MyFavoritesMoviesContainer">
+                <h2>My Favorites</h2>
+                @await Html.PartialAsync("_MyCollectionHelper", myFavorites)
+            </div>
+        }
+    }
+}
+
+<div class="MyLatestReleasesMoviesContainer">
+    <h2>Latest releases</h2>
+    <div class="container-fluid">
+        @for (var i = 0; i < Model.Count; i += 2)
+        {
+        <!-- @Html.Raw(i % 2 == 0 ? "<div class='row'>": "") -->
+            <div class="row custom-row">
+                <div class="poster col-md-3 col col-xs-6">
+                    <p>
+                        <a asp-action="Movies" asp-controller="Collection" asp-route-id="@Model[i].Id" class="thumbnail">
+                            <img style="width:50%;" src="@Model[i].Poster" />
+                        </a>
+                    </p>
+                    @await Html.PartialAsync("_AddCollectionHelper", Model[i])
+                </div>
+                <div class="information col-md-3 col">
+                    <p class="title">@Model[i].Title</p>
+                    <p class="release-date">
+                        @foreach (var k in Model[i].ReleaseDate.Keys)
+                {
+                            @: @k -  @Model[i].ReleaseDate[k].ToString("d")
+                        }
+                    </p>
+                    @if (!string.IsNullOrEmpty(Model[i].Storyline))
+                {
+                    int length = (Model[i].Storyline.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i].Storyline.Length;
+                        <p class="summary"><h4>Description:</h4> @Model[i].Storyline.Substring(0, length) <text>...</text></p>
+                    }
+                    else if (!string.IsNullOrEmpty(Model[i].Description))
+                    {
+                        int length = (Model[i].Description.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i].Description.Length;
+                        <p class="summary"><h4>Description:</h4> @Model[i].Description.Substring(0, length) <text>...</text></p>
+                    }
+                    <p class="keywords">
+                        <h4>Keywords:</h4>
+                        @foreach (var k in Model[i].Keywords)
+                {
+                            @:  @k
+                        }
+                    </p>
+                </div>
+
+                @if ((i + 1) < Model.Count)
+                {
+                    <div class="poster col-md-3 col">
+                        <p>
+                            <a asp-action="Movies" asp-controller="Collection" asp-route-id="@Model[i+1].Id" class="thumbnail">
+                                <img style="width:50%;" src="@Model[i+1].Poster" />
+                            </a>
+                        </p>
+                        @await Html.PartialAsync("_AddCollectionHelper", Model[i + 1])
+                    </div>
+                    <div class="information col-md-3 col">
+                        <p class="title">@Model[i + 1].Title</p>
+                        <p class="release-date">
+                            @foreach (var k in Model[i + 1].ReleaseDate.Keys)
+                    {
+                                @: @k -  @Model[i + 1].ReleaseDate[k].ToString("d")
+                        }
+                        </p>
+                        @if (!string.IsNullOrEmpty(Model[i + 1].Storyline))
+                        {
+                            int length = (Model[i + 1].Storyline.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i + 1].Storyline.Length;
+                            <p class="summary"><h4>Description:</h4> @Model[i + 1].Storyline.Substring(0, length) <text>...</text></p>
+                        }
+                        else if (!string.IsNullOrEmpty(Model[i + 1].Description))
+                        {
+                            int length = (Model[i + 1].Description.Length > (int)ViewData["SummaryMaxCharacters"]) ? (int)ViewData["SummaryMaxCharacters"] : Model[i + 1].Description.Length;
+                            <p class="summary"><h4>Description:</h4> @Model[i + 1].Description.Substring(0, length) <text>...</text></p>
+                        }
+                        <p class="keywords">
+                            <h4>Keywords:</h4>
+                            @foreach (var k in Model[i + 1].Keywords)
+                    {
+                                @: @k
+                    }
+                        </p>
+                    </div>
+
+
+
+                }
+                <!-- @Html.Raw(i % 2 == 0 ? "</div>" : "") -->
+            </div>
+        }
+    </div>
+    <div class="previous-next ">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+
+
+
+                @{
+                    int offset = (int)ViewData["offset"];
+                    int count = (int)ViewData["count"];
+                    int maxPages = (int)ViewData["MaxPages"];
+                    int maxElements = (int)ViewData["MaxElements"];
+                    int currentPage = 0;
+                    if (ViewData["CurrentPage"] != null)
+                    {
+                        currentPage = (int)ViewData["CurrentPage"];
+                    }
+                    int previous = (offset - maxElements < 0) ? offset = 0 : offset - maxElements;
+                }
+                @if (offset != 0)
+            {
+                    <li>
+                        @Html.ActionLink("First ", "Movies", "Collection", new { offset = 0 }, new Dictionary<string, object> {
+                                                                                           { "aria-label", "First" }
+                                                                                        })
+                    </li>
+                    <li>
+                        @Html.ActionLink("Previous", "Movies", "Collection", new { offset = previous, currentPage = currentPage - 1 },
+                                                                                        new Dictionary<string, object> {
+                                                                                           { "aria-label", "Previous" }
+                                                                                        })
+                    </li>
+                }
+
+                @for (int i = offset + maxElements, j = currentPage + 1, k = 0; i < (count / 4) && k < maxPages; i += maxElements, j++, k++)
+            {
+                    <li>
+                        @Html.ActionLink(j.ToString(), "Movies", "Collection", new { offset = i, currentPage = j }, null)
+                    </li>
+                }
+
+                @if (count > 4 && offset * 4 < count)
+            {
+                    <li>
+                        @Html.ActionLink("Next", "Movies", "Collection", new { offset = offset + maxElements, currentPage = currentPage + 1 },
+                                                                                        new Dictionary<string, object> {
+                                                                                           { "aria-label", "Next" }
+                                                                                        })
+                    </li>
+                    @*@Html.ActionLink(" Last", "Movies", "Collection", new { offset = count-4 }, null);*@
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
