@@ -342,7 +342,8 @@ namespace CollectionManager.Controllers
             string restOutput = string.Empty;
             MapperMovie mapper = new MapperMovie();
             List<Movie> movies = null;
-            Dictionary<string, string> apiRequests = new Dictionary<string, string>();
+            Dictionary<string, string> apiKey = new Dictionary<string, string>();
+            apiKey.Add("api_key", _appSettings.ApiKey.Movie);
 
             // init some ViewData values
             ViewData["MaxPages"] = this.MaxPages;
@@ -352,32 +353,32 @@ namespace CollectionManager.Controllers
             ViewData["SummaryMaxCharacters"] = this.SummaryMaxCharacters;
             ApplicationUser user = this.GetConnectedUser();
 
-            if (Uri.TryCreate(_appSettings.ServicesSettings.Game, UriKind.Absolute, out movieApiRestUrl))
+            if (Uri.TryCreate(_appSettings.ServicesSettings.Movie, UriKind.Absolute, out movieApiRestUrl))
             {
-                restApi = new RestAPI(apiRequests, movieApiRestUrl, parameters);
+                restApi = new RestAPI(apiKey, movieApiRestUrl, parameters);
                 if (id != null)
                 {
-                    parameters = $"movie/{id}?api_key={_appSettings.ApiKey.Game}&language=en-US";
+                    parameters = $"movie/{id}?api_key={_appSettings.ApiKey.Movie}&language=en-US";
                 }
                 else
                 {
-                    JToken latestId = restApi.GetSpecificValue($"movie/latest?api_key={_appSettings.ApiKey.Game}&language=en-US", "id");
+                    JToken latestId = restApi.GetSpecificValue($"movie/latest?api_key={_appSettings.ApiKey.Movie}&language=en-US", "id");
                     ViewData["count"] = latestId.Value<int>();
 
                     for (int i = (int)(ViewData["count"]), j=0;j<MaxElements;i--, j++)
                     {
-                        parameters = $"movie/{i}?api_key={_appSettings.ApiKey.Game}&language=en-US";
-                        restApi = new RestAPI(apiRequests, movieApiRestUrl, parameters);
+                        parameters = $"movie/{i}?api_key={_appSettings.ApiKey.Movie}&language=en-US";
+                        restApi = new RestAPI(apiKey, movieApiRestUrl, parameters);
                         json = restApi.DoCall();
                         movies.Add(mapper.Mapping(json, restApi, _movieContext, user, _logger));
                     }
                     
-                    // parameters = $"movie/latest?api_key={_appSettings.ApiKey.Game}&language=en-US";
+                    // parameters = $"movie/latest?api_key={_appSettings.ApiKey.Movie}&language=en-US";
                 }
 
                 try
                 {
-                    restApi = new RestAPI(apiRequests, movieApiRestUrl, parameters);
+                    restApi = new RestAPI(apiKey, movieApiRestUrl, parameters);
                     json = restApi.DoCall();
                     // movies = mapper.Mapping(json, restApi, _movieContext, user, _logger);
 

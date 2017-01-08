@@ -9,10 +9,13 @@ namespace CollectionManager.Models
 {
     public static class DbInitializer
     {
-        public static void Initialize(GameContext gameContext)
+        public static void Initialize(GameContext gameContext, MovieContext movieContext)
         {
             // gameContext.Database.EnsureDeleted();
             gameContext.Database.EnsureCreated();
+
+            // movieContext.Database.EnsureDeleted();
+            movieContext.Database.EnsureCreated();
 
             // if (gameContext.GameDbMapping.Any())
             //    gameContext.RemoveRange(gameContext.GameDbMapping.Select(x => x));
